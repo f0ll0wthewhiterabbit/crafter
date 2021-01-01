@@ -5,5 +5,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "f0ll0wthewhiterabbit",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
 }
