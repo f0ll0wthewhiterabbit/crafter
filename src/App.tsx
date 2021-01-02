@@ -1,6 +1,7 @@
 import React from 'react'
-import HelloWorld from '@/components/HelloWorld'
 
-const App: React.FC = () => <HelloWorld />
+import Router from '@/Router'
+
+const App: React.FC = () => <Router />
 
 export default App
