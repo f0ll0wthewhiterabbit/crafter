@@ -21,6 +21,7 @@ const webpackConfig = (env: any): Configuration => ({
   devServer: {
     historyApiFallback: true,
   },
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
