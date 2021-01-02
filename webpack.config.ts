@@ -3,9 +3,10 @@ import webpack, { Configuration } from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+// @ts-ignore
 import InterpolateHtmlPlugin from 'react-dev-utils/InterpolateHtmlPlugin'
 
-const webpackConfig = (env): Configuration => ({
+const webpackConfig = (env: any): Configuration => ({
   entry: './src/index.tsx',
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
