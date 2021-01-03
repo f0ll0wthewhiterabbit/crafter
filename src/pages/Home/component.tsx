@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { FC } from 'react'
 import styled from 'styled-components'
+import { Button } from 'antd'
+import { BugOutlined } from '@ant-design/icons'
 
 interface TitleProps {
   primary?: boolean
@@ -17,15 +19,18 @@ const Paragraph = styled.p`
   color: ${({ theme }) => theme.colors.font.regular};
 `
 
-const HomePage: React.FC = () => {
+const HomePage: FC = () => {
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <Title primary>Home page</Title>
       <Paragraph>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusamus inventore quas
         voluptates id dolores. In quaerat laboriosam nemo optio ducimus temporibus quis ex, dolor,
         sed vel tempora, explicabo commodi molestiae!
       </Paragraph>
+      <Button type="primary" icon={<BugOutlined />}>
+        Button
+      </Button>
     </div>
   )
 }

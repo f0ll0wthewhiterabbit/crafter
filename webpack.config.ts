@@ -42,6 +42,10 @@ const webpackConfig = (env: any): Configuration => ({
         // ?name=[name].[ext] is only necessary to preserve the original file name
         use: ['file-loader?name=[name].[ext]'],
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins: [

@@ -16,6 +16,5 @@ export const GlobalStyles = createGlobalStyle`
     padding: 0;
     color: ${({ theme }) => theme.colors.font.regular};
     background: ${({ theme }) => theme.colors.background.main};
-    font-family: Open-Sans, Helvetica, sans-serif;
   }
 `
