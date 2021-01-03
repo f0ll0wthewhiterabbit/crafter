@@ -5,6 +5,9 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 // @ts-ignore
 import InterpolateHtmlPlugin from 'react-dev-utils/InterpolateHtmlPlugin'
+import createStyledComponentsTransformer from 'typescript-plugin-styled-components'
+
+const styledComponentsTransformer = createStyledComponentsTransformer()
 
 const webpackConfig = (env: any): Configuration => ({
   entry: './src/index.tsx',
@@ -29,6 +32,7 @@ const webpackConfig = (env: any): Configuration => ({
         loader: 'ts-loader',
         options: {
           transpileOnly: true,
+          getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
         },
         exclude: /dist/,
       },
