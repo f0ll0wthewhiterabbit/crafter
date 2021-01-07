@@ -1,12 +1,9 @@
 import React, { FC } from 'react'
-import { Layout } from 'antd'
 
 import Copyright from './components/Copyright'
 import Logo from './components/Logo'
 import UserMenu from './components/UserMenu'
-import { Wrapper, Header, Footer } from './styles'
-
-const { Content: AntdContent } = Layout
+import { Wrapper, Header, Content, Footer } from './styles'
 
 const LayoutWrapper: FC = ({ children }) => (
   <Wrapper>
@@ -14,7 +11,7 @@ const LayoutWrapper: FC = ({ children }) => (
       <Logo />
       <UserMenu />
     </Header>
-    <AntdContent>{children}</AntdContent>
+    <Content>{children}</Content>
     <Footer>
       <Copyright />
     </Footer>
