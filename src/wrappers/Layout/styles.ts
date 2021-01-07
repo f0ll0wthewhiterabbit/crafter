@@ -9,6 +9,10 @@ export const Wrapper = styled(AntdLayout)`
 
 export const Header = styled(AntdHeader)`
   color: ${({ theme }) => theme.colors.font.contrast};
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  line-height: 1.15;
 `
 
 export const Footer = styled(AntdFooter)`
