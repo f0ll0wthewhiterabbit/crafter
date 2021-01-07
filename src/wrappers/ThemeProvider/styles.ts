@@ -14,7 +14,5 @@ export const GlobalStyles = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    color: ${({ theme }) => theme.colors.font.regular};
-    background: ${({ theme }) => theme.colors.background.main};
   }
 `

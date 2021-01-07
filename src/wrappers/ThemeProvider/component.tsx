@@ -5,12 +5,10 @@ import { GlobalStyles } from './styles'
 
 const theme: DefaultTheme = {
   colors: {
-    background: {
-      main: '#fafafa',
-    },
     font: {
-      regular: '#727272',
+      contrast: '#fff',
     },
+    border: '#dcdcdc',
   },
 }
 

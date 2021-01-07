@@ -16,7 +16,6 @@ const Title = styled.h1<TitleProps>`
 const Paragraph = styled.p`
   font-size: 1em;
   text-align: center;
-  color: ${({ theme }) => theme.colors.font.regular};
 `
 
 const HomePage: FC = () => {
