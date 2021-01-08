@@ -7,6 +7,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import InterpolateHtmlPlugin from 'react-dev-utils/InterpolateHtmlPlugin'
 import createStyledComponentsTransformer from 'typescript-plugin-styled-components'
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
 const styledComponentsTransformer = createStyledComponentsTransformer()
 
@@ -60,6 +61,7 @@ const webpackConfig = (env: any): Configuration => ({
   },
   plugins: [
     isDevelopment && new ReactRefreshPlugin(),
+    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     new ForkTsCheckerWebpackPlugin({
       eslint: {
         // same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
@@ -83,7 +85,7 @@ const webpackConfig = (env: any): Configuration => ({
         },
       ],
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    new CleanWebpackPlugin(),
   ].filter(Boolean),
 })
 
