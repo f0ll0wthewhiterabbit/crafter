@@ -6,10 +6,14 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 // @ts-ignore
 import InterpolateHtmlPlugin from 'react-dev-utils/InterpolateHtmlPlugin'
 import createStyledComponentsTransformer from 'typescript-plugin-styled-components'
+import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin'
 
 const styledComponentsTransformer = createStyledComponentsTransformer()
 
+const isDevelopment = process.env.NODE_ENV !== 'production'
+
 const webpackConfig = (env: any): Configuration => ({
+  mode: isDevelopment ? 'development' : 'production',
   entry: './src/index.tsx',
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
@@ -29,11 +33,17 @@ const webpackConfig = (env: any): Configuration => ({
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: true,
-          getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
-        },
+        include: path.join(__dirname, 'src'),
+        loader: isDevelopment ? 'babel-loader' : 'ts-loader',
+        options: isDevelopment
+          ? {
+              presets: ['@babel/preset-react', '@babel/preset-typescript'],
+              plugins: ['react-refresh/babel', 'babel-plugin-styled-components'],
+            }
+          : {
+              transpileOnly: true,
+              getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
+            },
         exclude: /dist/,
       },
       {
@@ -49,12 +59,19 @@ const webpackConfig = (env: any): Configuration => ({
     ],
   },
   plugins: [
+    isDevelopment && new ReactRefreshPlugin(),
+    new ForkTsCheckerWebpackPlugin({
+      eslint: {
+        // same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
+        files: './src/**/*.{ts,tsx,js,jsx}',
+      },
+    }),
     new HtmlWebpackPlugin({
       inject: true,
       template: './public/index.html',
     }),
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
-      PUBLIC_URL: env.production ? '' : 'public/',
+      PUBLIC_URL: isDevelopment ? 'public/' : '',
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -66,16 +83,8 @@ const webpackConfig = (env: any): Configuration => ({
         },
       ],
     }),
-    new webpack.DefinePlugin({
-      'process.env.PRODUCTION': env.production || !env.development,
-    }),
-    new ForkTsCheckerWebpackPlugin({
-      eslint: {
-        // same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
-        files: './src/**/*.{ts,tsx,js,jsx}',
-      },
-    }),
-  ],
+    new webpack.HotModuleReplacementPlugin(),
+  ].filter(Boolean),
 })
 
 export default webpackConfig
