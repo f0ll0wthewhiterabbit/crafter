@@ -5,8 +5,11 @@ declare module 'styled-components' {
     colors: {
       font: {
         contrast: string
+        error: string
       }
+      accent: string
       border: string
+      formIcon: string
     }
   }
 }
