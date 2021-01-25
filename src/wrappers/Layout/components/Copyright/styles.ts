@@ -7,4 +7,5 @@ export const Wrapper = styled.p`
 
 export const Link = styled(RouterLink)`
   text-decoration: none;
+  color: ${({ theme }) => theme.colors.font.contrast};
 `

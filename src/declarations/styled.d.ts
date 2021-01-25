@@ -7,9 +7,19 @@ declare module 'styled-components' {
         contrast: string
         error: string
       }
+      icon: {
+        form: string
+        exclamation: string
+      }
+      background: {
+        board: string
+        footer: string
+      }
+      border: {
+        board: string
+        modal: string
+      }
       accent: string
-      border: string
-      formIcon: string
     }
   }
 }

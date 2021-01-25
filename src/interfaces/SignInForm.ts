@@ -1,4 +1,4 @@
-export interface SignInFormValues {
+export interface SignInForm {
   email: string
   password: string
   remember: boolean

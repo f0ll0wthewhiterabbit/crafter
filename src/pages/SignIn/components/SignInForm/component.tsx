@@ -6,7 +6,7 @@ import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 
 import { ROUTE_NAMES } from '@/constants/routeNames'
-import { SignInFormValues } from '@/interfaces/SignInFormValues'
+import { SignInForm as ISignInForm } from '@/interfaces/SignInForm'
 import {
   Form,
   FormItem,
@@ -17,8 +17,8 @@ import {
   ErrorMessage,
 } from './styles'
 
-const SignInPage: FC = () => {
-  const handleFormSubmit = (values: SignInFormValues) => {
+const SignInForm: FC = () => {
+  const handleFormSubmit = (values: ISignInForm) => {
     console.log(values)
   }
 
@@ -89,4 +89,4 @@ const SignInPage: FC = () => {
   )
 }
 
-export default SignInPage
+export default SignInForm

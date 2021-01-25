@@ -27,13 +27,13 @@ export const CheckboxFormItem = styled(FormItem)`
 
 export const Input = styled(AntdInput)`
   .site-form-item-icon {
-    color: ${({ theme }) => theme.colors.formIcon};
+    color: ${({ theme }) => theme.colors.icon.form};
   }
 `
 
 export const PasswordInput = styled(AntdInput.Password)`
   .site-form-item-icon {
-    color: ${({ theme }) => theme.colors.formIcon};
+    color: ${({ theme }) => theme.colors.icon.form};
   }
 `
 

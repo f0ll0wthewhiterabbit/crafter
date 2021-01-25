@@ -5,11 +5,11 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import { ROUTE_NAMES } from '@/constants/routeNames'
-import { SignUpFormValues } from '@/interfaces/SignUpFormValues'
+import { SignUpForm as ISignUpForm } from '@/interfaces/SignUpForm'
 import { Form, Button, FormItem, FormItemRequired, ErrorMessage } from './styles'
 
 const SignUpForm: FC = () => {
-  const handleFormSubmit = (values: SignUpFormValues) => {
+  const handleFormSubmit = (values: ISignUpForm) => {
     console.log(values)
   }
 

@@ -9,9 +9,19 @@ const theme: DefaultTheme = {
       contrast: '#fff',
       error: '#ff4d4f',
     },
+    icon: {
+      form: 'rgba(0, 0, 0, 0.25)',
+      exclamation: '#faad14',
+    },
+    background: {
+      board: '#e7effb',
+      footer: '#001529',
+    },
+    border: {
+      board: '#d4dfe9',
+      modal: '#f0f0f0',
+    },
     accent: '#1890ff',
-    border: '#dcdcdc',
-    formIcon: ' rgba(0, 0, 0, 0.25)',
   },
 }
 
