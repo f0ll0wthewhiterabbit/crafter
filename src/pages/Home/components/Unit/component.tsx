@@ -1,6 +1,11 @@
 import React, { FC, useState } from 'react'
 import { Tooltip, Button } from 'antd'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from '@ant-design/icons'
 
 import DeleteModal from '@/components/DeleteModal'
 import UnitModal from '@/components/UnitModal'
@@ -41,6 +46,11 @@ const Unit: FC<{ item?: Item; recipe?: Recipe }> = ({ item, recipe }) => {
     setIsDeleteModalVisible(false)
   }
 
+  const addToBag = () => {
+    // TODO:
+    console.log('added to bag')
+  }
+
   return (
     <>
       <Tooltip title={title}>
@@ -53,8 +63,17 @@ const Unit: FC<{ item?: Item; recipe?: Recipe }> = ({ item, recipe }) => {
         >
           <Image src={imageSrc} alt={title} isFocused={isFocused} />
           <Controls $isVisible={isFocused}>
-            <Button shape="circle" icon={<DeleteOutlined />} onClick={showDeleteModal} />
+            <Button
+              shape="circle"
+              icon={item ? <DeleteOutlined /> : <ArrowLeftOutlined />}
+              onClick={item ? showDeleteModal : addToBag}
+            />
             <Button shape="circle" icon={<EditOutlined />} onClick={showUnitModal} />
+            <Button
+              shape="circle"
+              icon={item ? <ArrowRightOutlined /> : <DeleteOutlined />}
+              onClick={item ? addToBag : showDeleteModal}
+            />
           </Controls>
         </ImageWrapper>
       </Tooltip>

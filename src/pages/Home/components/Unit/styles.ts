@@ -36,6 +36,6 @@ export const Controls = styled.div<{ $isVisible: boolean }>`
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
 
   > * + * {
-    margin-left: 8px;
+    margin-left: 5px;
   }
 `
