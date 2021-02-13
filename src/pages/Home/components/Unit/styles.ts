@@ -15,6 +15,10 @@ export const ImageWrapper = styled.div<{ tabIndex: number }>`
       0 5px 12px 4px rgba(0, 0, 0, 0.09);
     outline: none;
   }
+
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 export const Image = styled.img<{ isFocused: boolean }>`

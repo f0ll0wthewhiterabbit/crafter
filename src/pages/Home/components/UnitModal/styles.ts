@@ -1,52 +1,46 @@
 import styled from 'styled-components'
-import { Modal as AntdModal, Form as AntdForm } from 'antd'
+import { Modal as AntdModal } from 'antd'
 
 export const Modal = styled(AntdModal)`
+  .ant-modal-header {
+    padding-left: 30px;
+    padding-right: 60px;
+  }
+
   .ant-modal-body {
-    padding: 0;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
   }
 `
 
-export const Form = styled(AntdForm)`
+export const ImageWrapper = styled.div`
+  width: 150px;
+  height: 150px;
+  margin-right: 30px;
+`
+
+export const Image = styled.img`
   width: 100%;
+  height: 100%;
+  object-fit: cover;
 `
 
-export const FormBody = styled.div`
-  padding: 20px 32px 20px;
+export const DescriptionWrapper = styled.div`
+  flex-grow: 1;
 `
 
-export const FormItem = styled(AntdForm.Item)`
-  margin-bottom: 10px;
+export const DescriptionList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
 
-  .ant-form-item-label {
-    padding-bottom: 2px;
+  > * + * {
+    margin-top: 5px;
   }
 `
 
-export const FormItemRequired = styled(FormItem)`
-  .ant-form-item-label {
-    label {
-      &::before {
-        content: '*';
-        display: inline-block;
-        margin-right: 4px;
-        color: ${({ theme }) => theme.colors.font.error};
-        font-size: 14px;
-        font-family: SimSun, sans-serif;
-        line-height: 1;
-      }
-    }
-  }
-`
-
-export const Controls = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 10px 32px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border.modal};
-
-  & > * + * {
-    margin-left: 8px;
-  }
+export const ItemsList = styled.ul`
+  list-style-type: square;
 `

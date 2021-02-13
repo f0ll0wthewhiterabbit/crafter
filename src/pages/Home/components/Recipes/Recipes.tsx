@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { useSelector } from 'react-redux'
 
-import { UNIT_MODAL_MODES, UNIT_TYPES } from '@/constants/unit.constants'
+import { UNIT_FORM_MODAL_MODES, UNIT_TYPES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
 import Board from '@/pages/Home/components/Board'
 import Unit from '@/pages/Home/components/Unit'
@@ -13,7 +13,7 @@ const Recipes: FC = () => {
   return (
     <Board
       title="Recipes"
-      controls={<AddButton mode={UNIT_MODAL_MODES.RECIPE_ADD} title="Add recipe" />}
+      controls={<AddButton mode={UNIT_FORM_MODAL_MODES.RECIPE_ADD} title="Add recipe" />}
     >
       {recipes
         .filter((recipe) => !recipe.belongsTo)
