@@ -5,7 +5,7 @@ import Logo from './components/Logo'
 import UserMenu from './components/UserMenu'
 import { Wrapper, Header, Content, Footer } from './styles'
 
-const LayoutWrapper: FC = ({ children }) => (
+const Layout: FC = ({ children }) => (
   <Wrapper>
     <Header>
       <Logo />
@@ -18,4 +18,4 @@ const LayoutWrapper: FC = ({ children }) => (
   </Wrapper>
 )
 
-export default LayoutWrapper
+export default Layout

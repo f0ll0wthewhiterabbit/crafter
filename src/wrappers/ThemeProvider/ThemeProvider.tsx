@@ -1,5 +1,5 @@
 import React from 'react'
-import { DefaultTheme, ThemeProvider } from 'styled-components'
+import { DefaultTheme, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components'
 
 import { GlobalStyles } from './styles'
 
@@ -26,13 +26,13 @@ const theme: DefaultTheme = {
   },
 }
 
-const ThemeProviderWrapper: React.FC = ({ children }) => (
-  <ThemeProvider theme={theme}>
+const ThemeProvider: React.FC = ({ children }) => (
+  <StyledComponentsThemeProvider theme={theme}>
     <>
       <GlobalStyles />
       {children}
     </>
-  </ThemeProvider>
+  </StyledComponentsThemeProvider>
 )
 
-export default ThemeProviderWrapper
+export default ThemeProvider
