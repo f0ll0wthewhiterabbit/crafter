@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 
-import { ROUTE_NAMES } from '@/constants/routeNames'
-import { SignUpForm as ISignUpForm } from '@/interfaces/SignUpForm'
+import { ROUTE_NAMES } from '@/router/routes.constants'
+import { SignUpForm as ISignUpForm } from '@/types/authentication.types'
 import { Form, Button, FormItem, FormItemRequired, ErrorMessage } from './styles'
 
 const SignUpForm: FC = () => {

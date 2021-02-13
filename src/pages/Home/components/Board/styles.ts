@@ -32,4 +32,7 @@ export const Title = styled(AntdTitle)`
 export const Content = styled.div`
   padding-top: 20px;
   padding-bottom: 20px;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, 130px);
 `

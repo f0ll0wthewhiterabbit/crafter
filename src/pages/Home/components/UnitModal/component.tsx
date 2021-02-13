@@ -1,13 +1,19 @@
 import React, { FC, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import { Input, Button, Tooltip } from 'antd'
 
-import { Item } from '@/interfaces/Item'
-import { Recipe } from '@/interfaces/Recipe'
-import { ItemForm } from '@/interfaces/ItemForm'
-import { RecipeForm } from '@/interfaces/RecipeForm'
-import { UNIT_MODAL_MODES } from '@/constants/unitModalModes'
+import { Item, ItemForm } from '@/types/item.types'
+import { Recipe, RecipeForm } from '@/types/recipe.types'
+import { Unit } from '@/types/unit.types'
+import { UNIT_MODAL_MODES } from '@/constants/unit.constants'
+import {
+  addItemRequest,
+  addRecipeRequest,
+  editItemRequest,
+  editRecipeRequest,
+} from '@/store/gameSlice'
 
 import ItemSelect from './components/ItemSelect'
 import { Modal, Form, FormBody, FormItemRequired, Controls } from './styles'
@@ -16,40 +22,66 @@ interface UnitModalProps {
   isVisible: boolean
   mode: UNIT_MODAL_MODES
   modalTitle: string
-  item?: Item
-  recipe?: Recipe
+  unit?: Unit
   handleClose: () => void
 }
 
-const UnitModal: FC<UnitModalProps> = ({
-  isVisible,
-  mode,
-  modalTitle,
-  item,
-  recipe,
-  handleClose,
-}) => {
+const UnitModal: FC<UnitModalProps> = ({ isVisible, mode, modalTitle, unit, handleClose }) => {
+  const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
-  const title = item?.title || recipe?.title || ''
-  const imageSrc = item?.imageSrc || recipe?.imageSrc || ''
-  const items = recipe?.items || []
+  const id = unit?.id || ''
+  const title = unit?.title || ''
+  const imageSrc = unit?.imageSrc || ''
+  const items = (unit as Recipe)?.items || []
   const isItemEditMode = mode === UNIT_MODAL_MODES.ITEM_EDIT
   const isRecipeAddMode = mode === UNIT_MODAL_MODES.RECIPE_ADD
   const isRecipeEditMode = mode === UNIT_MODAL_MODES.RECIPE_EDIT
+  const isRecipe = isRecipeAddMode || isRecipeEditMode
 
   const handleConfirm = (values: ItemForm | RecipeForm) => {
     setIsLoading(true)
 
     if (isItemEditMode || isRecipeEditMode) {
-      console.log('Edit confirm', values)
-    } else {
-      console.log('Add confirm', values)
-    }
+      setTimeout(() => {
+        console.log('Edit confirm', values)
 
-    setTimeout(() => {
-      handleClose()
-      setIsLoading(false)
-    }, 3000)
+        if (isRecipeEditMode) {
+          const updatedRecipe = { ...values, id } as Recipe
+          dispatch(editRecipeRequest(updatedRecipe))
+        } else {
+          const updatedItem = { ...values, id } as Item
+          dispatch(editItemRequest(updatedItem))
+        }
+
+        handleClose()
+        setIsLoading(false)
+      }, 3000)
+    } else {
+      setTimeout(() => {
+        console.log('Add confirm', values)
+
+        if (isRecipeAddMode) {
+          const recipe = {
+            ...values,
+            id: String(Math.random()),
+            belongsTo: null,
+            baggageDate: null,
+          } as Recipe
+          dispatch(addRecipeRequest(recipe))
+        } else {
+          const item = {
+            ...values,
+            id: String(Math.random()),
+            belongsTo: null,
+            baggageDate: null,
+          } as Item
+          dispatch(addItemRequest(item))
+        }
+
+        handleClose()
+        setIsLoading(false)
+      }, 3000)
+    }
   }
 
   return (
@@ -63,7 +95,7 @@ const UnitModal: FC<UnitModalProps> = ({
       onCancel={handleClose}
     >
       <Formik
-        initialValues={{ title, imageSrc, ...(recipe && { items }) }}
+        initialValues={{ title, imageSrc, ...(isRecipe && { items }) }}
         validationSchema={Yup.object({
           title: Yup.string().required('Title is required'),
           imageSrc: Yup.string().required('Image is required'),
@@ -110,7 +142,7 @@ const UnitModal: FC<UnitModalProps> = ({
                   value={values.imageSrc}
                 />
               </FormItemRequired>
-              {(isRecipeAddMode || isRecipeEditMode) && (
+              {isRecipe && (
                 <FormItemRequired
                   name="items"
                   label="Items"
@@ -138,7 +170,7 @@ const UnitModal: FC<UnitModalProps> = ({
                   loading={isLoading}
                   disabled={!dirty || !isValid}
                 >
-                  Edit
+                  {isItemEditMode || isRecipeEditMode ? 'Edit' : 'Add'}
                 </Button>
               </Tooltip>
             </Controls>

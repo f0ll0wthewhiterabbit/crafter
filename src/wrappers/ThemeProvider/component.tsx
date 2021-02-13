@@ -16,6 +16,7 @@ const theme: DefaultTheme = {
     background: {
       board: '#e7effb',
       footer: '#001529',
+      unit: '#fff',
     },
     border: {
       board: '#d4dfe9',

@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 
-import { ROUTE_NAMES } from '@/constants/routeNames'
+import { ROUTE_NAMES } from '@/router/routes.constants'
 import { Wrapper, Link } from './styles'
 
 const Copyright: FC = () => (

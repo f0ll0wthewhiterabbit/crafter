@@ -1,17 +1,30 @@
 import React, { FC } from 'react'
+import { useDispatch } from 'react-redux'
 import { Typography, Button } from 'antd'
+
+import { deleteItemRequest, deleteRecipeRequest } from '@/store/gameSlice'
 
 import { Modal, ContentWrapper, ExclamationIcon, IconWrapper, Controls } from './styles'
 
 const { Title } = Typography
 
-const DeleteModal: FC<{ isVisible: boolean; title: string; handleClose: () => void }> = ({
-  isVisible,
-  title,
-  handleClose,
-}) => {
+const DeleteModal: FC<{
+  isVisible: boolean
+  id: string
+  title: string
+  isRecipe: boolean
+  handleClose: () => void
+}> = ({ isVisible, id, title, isRecipe, handleClose }) => {
+  const dispatch = useDispatch()
+
   const handleConfirm = () => {
+    // TODO: loading
     console.log('Delete confirm')
+
+    if (id) {
+      isRecipe ? dispatch(deleteRecipeRequest(id)) : dispatch(deleteItemRequest(id))
+    }
+
     handleClose()
   }
 

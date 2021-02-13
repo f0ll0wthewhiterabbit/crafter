@@ -2,8 +2,8 @@ import React, { FC, useState } from 'react'
 import { Tooltip } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
-import UnitModal from '@/components/UnitModal'
-import { UNIT_MODAL_MODES } from '@/constants/unitModalModes'
+import UnitModal from '@/pages/Home/components/UnitModal'
+import { UNIT_MODAL_MODES } from '@/constants/unit.constants'
 
 import { Button } from './styles'
 

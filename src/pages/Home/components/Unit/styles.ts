@@ -7,6 +7,7 @@ export const ImageWrapper = styled.div<{ tabIndex: number }>`
   border-radius: 10px;
   transition: box-shadow 0.5s;
   position: relative;
+  background-color: ${({ theme }) => theme.colors.background.unit};
 
   &:hover,
   &:focus {

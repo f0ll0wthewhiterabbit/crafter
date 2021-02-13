@@ -1,17 +1,19 @@
 import React, { FC } from 'react'
+import { useSelector } from 'react-redux'
 import { SelectValue } from 'antd/lib/select'
 import { useField } from 'formik'
+
+import { RootState } from '@/store/rootReducer'
 
 import { Select } from './styles'
 
 const { Option } = Select
 
-const items = ['Item1', 'Item2', 'Item3']
-
 const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
   fieldName,
   initialValue,
 }) => {
+  const { items } = useSelector((state: RootState) => state.game)
   const [, , helpers] = useField(fieldName)
   const { setValue, setTouched } = helpers
 
@@ -35,8 +37,8 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
       onClear={handleBlur}
     >
       {items.map((item) => (
-        <Option key={item} value={item}>
-          {item}
+        <Option key={item.id} value={item.id}>
+          {item.title}
         </Option>
       ))}
     </Select>

@@ -1,8 +1,24 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-
+import { Provider as StoreProvider } from 'react-redux'
 import 'antd/dist/antd.css'
 
-import App from '@/wrappers/App'
+import store from '@/store/store'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const render = () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const App = require('@/wrappers/App').default
+
+  ReactDOM.render(
+    <StoreProvider store={store}>
+      <App />
+    </StoreProvider>,
+    document.getElementById('root')
+  )
+}
+
+render()
+
+if (process.env.NODE_ENV === 'development' && module.hot) {
+  module.hot.accept('@/wrappers/App', render)
+}

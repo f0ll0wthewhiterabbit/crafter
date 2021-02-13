@@ -23,6 +23,7 @@ export const Content = styled(AntdContent)`
 
 export const Footer = styled(AntdFooter)`
   text-align: center;
+  color: ${({ theme }) => theme.colors.font.contrast};
   background-color: ${({ theme }) => theme.colors.background.footer};
   border-top: none;
 `

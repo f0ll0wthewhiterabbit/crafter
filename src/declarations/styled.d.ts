@@ -14,6 +14,7 @@ declare module 'styled-components' {
       background: {
         board: string
         footer: string
+        unit: string
       }
       border: {
         board: string

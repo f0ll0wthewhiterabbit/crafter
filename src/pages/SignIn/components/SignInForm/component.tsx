@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom'
 import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 
-import { ROUTE_NAMES } from '@/constants/routeNames'
-import { SignInForm as ISignInForm } from '@/interfaces/SignInForm'
+import { ROUTE_NAMES } from '@/router/routes.constants'
+import { SignInForm as ISignInForm } from '@/types/authentication.types'
 import {
   Form,
   FormItem,
