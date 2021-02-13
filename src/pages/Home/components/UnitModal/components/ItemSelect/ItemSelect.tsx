@@ -4,6 +4,7 @@ import { SelectValue } from 'antd/lib/select'
 import { useField } from 'formik'
 
 import { RootState } from '@/store/rootReducer'
+import { DUMMY_USER_ID } from '@/constants/user.constants'
 
 import { Select } from './styles'
 
@@ -36,11 +37,13 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
       onBlur={handleBlur}
       onClear={handleBlur}
     >
-      {items.map((item) => (
-        <Option key={item.id} value={item.id}>
-          {item.title}
-        </Option>
-      ))}
+      {items
+        .filter((item) => !item.belongsTo || item.belongsTo === DUMMY_USER_ID)
+        .map((item) => (
+          <Option key={item.id} value={item.title}>
+            {item.title}
+          </Option>
+        ))}
     </Select>
   )
 }

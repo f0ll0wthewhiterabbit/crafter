@@ -284,7 +284,7 @@ export const moveItemToBagRequest = (itemId: Item['id']): AppThunk => async (
     const state = getState()
     const baggageDate = Date.now()
     const items = state.game.items.map((stateItem) => {
-      if (stateItem.id !== itemId) {
+      if (stateItem.id === itemId) {
         return { ...stateItem, belongsTo: DUMMY_USER_ID, baggageDate }
       }
 
@@ -307,7 +307,7 @@ export const extractItemFromBagRequest = (itemId: Item['id']): AppThunk => async
 
     const state = getState()
     const items = state.game.items.map((stateItem) => {
-      if (stateItem.id !== itemId) {
+      if (stateItem.id === itemId) {
         return { ...stateItem, belongsTo: null, baggageDate: null }
       }
 
@@ -398,7 +398,7 @@ export const moveRecipeToBagRequest = (recipeId: Recipe['id']): AppThunk => asyn
     const state = getState()
     const baggageDate = Date.now()
     const recipes = state.game.recipes.map((stateRecipe) => {
-      if (stateRecipe.id !== recipeId) {
+      if (stateRecipe.id === recipeId) {
         return { ...stateRecipe, belongsTo: DUMMY_USER_ID, baggageDate }
       }
 
@@ -421,7 +421,7 @@ export const extractRecipeFromBagRequest = (recipeId: Recipe['id']): AppThunk =>
 
     const state = getState()
     const recipes = state.game.recipes.map((stateRecipe) => {
-      if (stateRecipe.id !== recipeId) {
+      if (stateRecipe.id === recipeId) {
         return { ...stateRecipe, belongsTo: null, baggageDate: null }
       }
 

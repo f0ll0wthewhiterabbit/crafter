@@ -4,7 +4,7 @@ export interface Recipe {
   id: string
   title: string
   imageSrc: string
-  items: Item['id'][]
+  items: Item['title'][]
   belongsTo: string | null
   baggageDate: number | null
 }

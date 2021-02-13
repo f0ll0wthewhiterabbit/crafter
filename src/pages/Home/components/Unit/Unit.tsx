@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Tooltip, Button } from 'antd'
+import { Tooltip, Button, Badge } from 'antd'
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
@@ -88,20 +88,22 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
   return (
     <>
       <Tooltip title={title}>
-        <ImageWrapper
-          tabIndex={0}
-          onFocus={handleImageWrapperFocus}
-          onBlur={handleImageWrapperBlur}
-          onMouseEnter={handleImageWrapperFocus}
-          onMouseLeave={handleImageWrapperBlur}
-        >
-          <Image src={imageSrc} alt={title} isFocused={isFocused} />
-          <Controls $isVisible={isFocused}>
-            <Button shape="circle" icon={leftButtonIcon} onClick={handleLeftButtonClick} />
-            <Button shape="circle" icon={<EditOutlined />} onClick={showUnitModal} />
-            <Button shape="circle" icon={rightButtonIcon} onClick={handleRightButtonClick} />
-          </Controls>
-        </ImageWrapper>
+        <Badge count={isRecipe ? 'Recipe' : 0} showZero={false} offset={[-20, 0]}>
+          <ImageWrapper
+            tabIndex={0}
+            onFocus={handleImageWrapperFocus}
+            onBlur={handleImageWrapperBlur}
+            onMouseEnter={handleImageWrapperFocus}
+            onMouseLeave={handleImageWrapperBlur}
+          >
+            <Image src={imageSrc} alt={title} isFocused={isFocused} />
+            <Controls $isVisible={isFocused}>
+              <Button shape="circle" icon={leftButtonIcon} onClick={handleLeftButtonClick} />
+              <Button shape="circle" icon={<EditOutlined />} onClick={showUnitModal} />
+              <Button shape="circle" icon={rightButtonIcon} onClick={handleRightButtonClick} />
+            </Controls>
+          </ImageWrapper>
+        </Badge>
       </Tooltip>
       <DeleteModal
         isVisible={isDeleteModalVisible}
