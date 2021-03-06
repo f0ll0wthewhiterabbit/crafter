@@ -40,7 +40,7 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
       {items
         .filter((item) => !item.belongsTo || item.belongsTo === DUMMY_USER_ID)
         .map((item) => (
-          <Option key={item.id} value={item.title}>
+          <Option key={item._id} value={item.title}>
             {item.title}
           </Option>
         ))}

@@ -1,7 +1,7 @@
 import { Item } from '@/types/item.types'
 
 export interface Recipe {
-  id: string
+  _id: string
   title: string
   imageSrc: string
   items: Item['title'][]

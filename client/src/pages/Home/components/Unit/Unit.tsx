@@ -28,7 +28,7 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
   const [isUnitFormModalVisible, setIsUnitFormModalVisible] = useState(false)
   const [isUnitModalVisible, setIsUnitModalVisible] = useState(false)
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
-  const { id, title, imageSrc, belongsTo } = unit
+  const { _id: id, title, imageSrc, belongsTo } = unit
   const isRecipe = unitType === UNIT_TYPES.RECIPE
 
   const handleImageWrapperFocus = () => {

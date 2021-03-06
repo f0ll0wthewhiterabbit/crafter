@@ -1,5 +1,5 @@
 export interface Item {
-  id: string
+  _id: string
   title: string
   imageSrc: string
   belongsTo: string | null

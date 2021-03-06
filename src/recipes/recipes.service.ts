@@ -42,7 +42,16 @@ export class RecipesService {
       }
     }
 
-    const updatedFields = updateRecipeDto as never
+    const updatedFields = updateRecipeDto as any
+
+    if (updateRecipeDto.belongsTo || updateRecipeDto.belongsTo === null) {
+      const { belongsTo } = await this.recipeModel.findById(id).exec()
+
+      if (belongsTo !== updateRecipeDto.belongsTo) {
+        // TODO: check current user id (belongsTo)
+        updatedFields.baggageDate = updateRecipeDto.belongsTo ? new Date().toISOString() : null
+      }
+    }
 
     return await this.recipeModel
       .findByIdAndUpdate(id, updatedFields as UpdateQuery<RecipeDocument>, {

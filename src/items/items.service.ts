@@ -24,7 +24,17 @@ export class ItemsService {
   }
 
   async update(id: Types.ObjectId, updateItemDto: UpdateItemDto): Promise<Item> {
-    const updatedFields = updateItemDto as never
+    const updatedFields = updateItemDto as any
+
+    if (updateItemDto.belongsTo || updateItemDto.belongsTo === null) {
+      const { belongsTo } = await this.itemModel.findById(id).exec()
+
+      if (belongsTo !== updateItemDto.belongsTo) {
+        // TODO: check current user id (belongsTo)
+        updatedFields.baggageDate = updateItemDto.belongsTo ? new Date().toISOString() : null
+      }
+    }
+
     return await this.itemModel
       .findByIdAndUpdate(id, updatedFields as UpdateQuery<ItemDocument>, {
         new: true,

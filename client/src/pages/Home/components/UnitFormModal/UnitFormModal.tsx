@@ -35,7 +35,7 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
 }) => {
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
-  const id = unit?.id || ''
+  const id = unit?._id || ''
   const title = unit?.title || ''
   const imageSrc = unit?.imageSrc || ''
   const items = (unit as Recipe)?.items || []
@@ -52,11 +52,9 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
         console.log('Edit confirm', values)
 
         if (isRecipeEditMode) {
-          const updatedRecipe = { ...values, id } as Recipe
-          dispatch(editRecipeRequest(updatedRecipe))
+          dispatch(editRecipeRequest(id, values as RecipeForm))
         } else {
-          const updatedItem = { ...values, id } as Item
-          dispatch(editItemRequest(updatedItem))
+          dispatch(editItemRequest(id, values as ItemForm))
         }
 
         handleClose()
@@ -67,21 +65,9 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
         console.log('Add confirm', values)
 
         if (isRecipeAddMode) {
-          const recipe = {
-            ...values,
-            id: String(Math.random()),
-            belongsTo: null,
-            baggageDate: null,
-          } as Recipe
-          dispatch(addRecipeRequest(recipe))
+          dispatch(addRecipeRequest(values as RecipeForm))
         } else {
-          const item = {
-            ...values,
-            id: String(Math.random()),
-            belongsTo: null,
-            baggageDate: null,
-          } as Item
-          dispatch(addItemRequest(item))
+          dispatch(addItemRequest(values as ItemForm))
         }
 
         handleClose()

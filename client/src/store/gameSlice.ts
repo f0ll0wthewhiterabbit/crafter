@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { Item } from '@/types/item.types'
-import { Recipe } from '@/types/recipe.types'
+import { Item, ItemForm } from '@/types/item.types'
+import { Recipe, RecipeForm } from '@/types/recipe.types'
 import { AppThunk } from '@/store/store'
-import { getDataFromStorage } from '@/helpers/storage.helper'
-import { STORAGE_KEYS } from '@/constants/storage.constants'
 import { DUMMY_USER_ID } from '@/constants/user.constants'
+import { itemsService } from '@/services/items.api'
+import { recipesService } from '@/services/recipes.api'
 
 interface GameState {
   items: Item[]
@@ -17,13 +17,15 @@ interface GameState {
 }
 
 interface MoveItemToBagPayload {
-  itemId: Item['id']
+  itemId: Item['_id']
   baggageDate: Item['baggageDate']
+  belongsTo: Item['belongsTo']
 }
 
 interface MoveRecipeToBagPayload {
-  recipeId: Recipe['id']
+  recipeId: Recipe['_id']
   baggageDate: Recipe['baggageDate']
+  belongsTo: Recipe['belongsTo']
 }
 
 const initialState: GameState = {
@@ -66,7 +68,7 @@ const gameSlice = createSlice({
       state.itemsError = null
     },
     editItemSuccess(state, { payload: item }: PayloadAction<Item>) {
-      const itemIndex = state.items.findIndex((stateItem) => stateItem.id === item.id)
+      const itemIndex = state.items.findIndex((stateItem) => stateItem._id === item._id)
 
       if (itemIndex > -1) {
         state.items[itemIndex] = item
@@ -75,8 +77,8 @@ const gameSlice = createSlice({
       state.isItemsLoading = false
       state.itemsError = null
     },
-    deleteItemSuccess(state, { payload: itemId }: PayloadAction<Item['id']>) {
-      const itemIndex = state.items.findIndex((stateItem) => stateItem.id === itemId)
+    deleteItemSuccess(state, { payload: itemId }: PayloadAction<Item['_id']>) {
+      const itemIndex = state.items.findIndex((stateItem) => stateItem._id === itemId)
 
       if (itemIndex > -1) {
         state.items.splice(itemIndex, 1)
@@ -86,19 +88,19 @@ const gameSlice = createSlice({
       state.itemsError = null
     },
     moveItemToBagSuccess(state, { payload }: PayloadAction<MoveItemToBagPayload>) {
-      const { itemId, baggageDate } = payload
-      const itemIndex = state.items.findIndex((stateItem) => stateItem.id === itemId)
+      const { itemId, baggageDate, belongsTo } = payload
+      const itemIndex = state.items.findIndex((stateItem) => stateItem._id === itemId)
 
       if (itemIndex > -1) {
-        state.items[itemIndex].belongsTo = DUMMY_USER_ID
+        state.items[itemIndex].belongsTo = belongsTo
         state.items[itemIndex].baggageDate = baggageDate
       }
 
       state.isItemsLoading = false
       state.itemsError = null
     },
-    extractItemFromBagSuccess(state, { payload: itemId }: PayloadAction<Item['id']>) {
-      const itemIndex = state.items.findIndex((stateItem) => stateItem.id === itemId)
+    extractItemFromBagSuccess(state, { payload: itemId }: PayloadAction<Item['_id']>) {
+      const itemIndex = state.items.findIndex((stateItem) => stateItem._id === itemId)
 
       if (itemIndex > -1) {
         state.items[itemIndex].belongsTo = null
@@ -129,7 +131,7 @@ const gameSlice = createSlice({
       state.recipesError = null
     },
     editRecipeSuccess(state, { payload: recipe }: PayloadAction<Recipe>) {
-      const recipeIndex = state.recipes.findIndex((stateItem) => stateItem.id === recipe.id)
+      const recipeIndex = state.recipes.findIndex((stateItem) => stateItem._id === recipe._id)
 
       if (recipeIndex > -1) {
         state.recipes[recipeIndex] = recipe
@@ -138,8 +140,8 @@ const gameSlice = createSlice({
       state.isRecipesLoading = false
       state.recipesError = null
     },
-    deleteRecipeSuccess(state, { payload: recipeId }: PayloadAction<Recipe['id']>) {
-      const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe.id === recipeId)
+    deleteRecipeSuccess(state, { payload: recipeId }: PayloadAction<Recipe['_id']>) {
+      const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe._id === recipeId)
 
       if (recipeIndex > -1) {
         state.recipes.splice(recipeIndex, 1)
@@ -149,19 +151,19 @@ const gameSlice = createSlice({
       state.recipesError = null
     },
     moveRecipeToBagSuccess(state, { payload }: PayloadAction<MoveRecipeToBagPayload>) {
-      const { recipeId, baggageDate } = payload
-      const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe.id === recipeId)
+      const { recipeId, baggageDate, belongsTo } = payload
+      const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe._id === recipeId)
 
       if (recipeIndex > -1) {
-        state.recipes[recipeIndex].belongsTo = DUMMY_USER_ID
+        state.recipes[recipeIndex].belongsTo = belongsTo
         state.recipes[recipeIndex].baggageDate = baggageDate
       }
 
       state.isRecipesLoading = false
       state.recipesError = null
     },
-    extractRecipeFromBagSuccess(state, { payload: recipeId }: PayloadAction<Recipe['id']>) {
-      const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe.id === recipeId)
+    extractRecipeFromBagSuccess(state, { payload: recipeId }: PayloadAction<Recipe['_id']>) {
+      const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe._id === recipeId)
 
       if (recipeIndex > -1) {
         state.recipes[recipeIndex].belongsTo = null
@@ -210,11 +212,12 @@ export const {
   extractRecipeFromBagError,
 } = gameSlice.actions
 
+// Items request actions
 export const fetchItemsRequest = (): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading())
 
-    const items = getDataFromStorage(STORAGE_KEYS.ITEMS) as Item[]
+    const items = await itemsService.getItems()
 
     if (!items) {
       throw new Error('Items data not received')
@@ -226,106 +229,66 @@ export const fetchItemsRequest = (): AppThunk => async (dispatch) => {
   }
 }
 
-export const addItemRequest = (item: Item): AppThunk => async (dispatch, getState) => {
+export const addItemRequest = (itemFormValues: ItemForm): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading())
-
-    const state = getState()
-    const items = [...state.game.items, item]
-
-    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(items))
+    const item = await itemsService.addItem(itemFormValues)
     dispatch(addItemSuccess(item))
   } catch {
     dispatch(addItemError('Item add error'))
   }
 }
 
-export const editItemRequest = (item: Item): AppThunk => async (dispatch, getState) => {
+export const editItemRequest = (itemId: Item['_id'], itemFormValues: ItemForm): AppThunk => async (
+  dispatch
+) => {
   try {
     dispatch(startItemsLoading())
-
-    const state = getState()
-    const items = state.game.items.map((stateItem) => {
-      if (stateItem.id === item.id) {
-        return item
-      }
-
-      return stateItem
-    })
-
-    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(items))
+    const item = await itemsService.editItem(itemId, itemFormValues)
     dispatch(editItemSuccess(item))
   } catch {
     dispatch(editItemError('Item edit error'))
   }
 }
 
-export const deleteItemRequest = (itemId: Item['id']): AppThunk => async (dispatch, getState) => {
+export const deleteItemRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading())
-
-    const state = getState()
-    const items = state.game.items.filter((stateItem) => stateItem.id !== itemId)
-
-    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(items))
+    await itemsService.deleteItem(itemId)
     dispatch(deleteItemSuccess(itemId))
   } catch {
     dispatch(deleteItemError('Item delete error'))
   }
 }
 
-export const moveItemToBagRequest = (itemId: Item['id']): AppThunk => async (
-  dispatch,
-  getState
-) => {
+export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading())
-
-    const state = getState()
-    const baggageDate = Date.now()
-    const items = state.game.items.map((stateItem) => {
-      if (stateItem.id === itemId) {
-        return { ...stateItem, belongsTo: DUMMY_USER_ID, baggageDate }
-      }
-
-      return stateItem
-    })
-
-    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(items))
-    dispatch(moveItemToBagSuccess({ itemId, baggageDate }))
+    const { baggageDate, belongsTo } = await itemsService.editItem(itemId, {
+      belongsTo: DUMMY_USER_ID,
+    } as Partial<Item>)
+    dispatch(moveItemToBagSuccess({ itemId, baggageDate, belongsTo }))
   } catch {
     dispatch(moveItemToBagError('Move item to bag error'))
   }
 }
 
-export const extractItemFromBagRequest = (itemId: Item['id']): AppThunk => async (
-  dispatch,
-  getState
-) => {
+export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading())
-
-    const state = getState()
-    const items = state.game.items.map((stateItem) => {
-      if (stateItem.id === itemId) {
-        return { ...stateItem, belongsTo: null, baggageDate: null }
-      }
-
-      return stateItem
-    })
-
-    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(items))
+    await itemsService.editItem(itemId, { belongsTo: null } as Partial<Item>)
     dispatch(extractItemFromBagSuccess(itemId))
   } catch {
     dispatch(extractItemFromBagError('Extract item from bag error'))
   }
 }
 
+// Recipes request actions
 export const fetchRecipesRequest = (): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading())
 
-    const recipes = getDataFromStorage(STORAGE_KEYS.RECIPES) as Recipe[]
+    const recipes = await recipesService.getRecipes()
 
     if (!recipes) {
       throw new Error('Recipes data not received')
@@ -337,98 +300,58 @@ export const fetchRecipesRequest = (): AppThunk => async (dispatch) => {
   }
 }
 
-export const addRecipeRequest = (recipe: Recipe): AppThunk => async (dispatch, getState) => {
+export const addRecipeRequest = (recipeFormValues: RecipeForm): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading())
-
-    const state = getState()
-    const recipes = [...state.game.recipes, recipe]
-
-    localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(recipes))
+    const recipe = await recipesService.addRecipe(recipeFormValues)
     dispatch(addRecipeSuccess(recipe))
   } catch {
     dispatch(addRecipeError('Recipe add error'))
   }
 }
 
-export const editRecipeRequest = (recipe: Recipe): AppThunk => async (dispatch, getState) => {
+export const editRecipeRequest = (
+  recipeId: Recipe['_id'],
+  recipeFormValues: RecipeForm
+): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading())
-
-    const state = getState()
-    const recipes = state.game.recipes.map((stateRecipe) => {
-      if (stateRecipe.id === recipe.id) {
-        return recipe
-      }
-
-      return stateRecipe
-    })
-
-    localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(recipes))
+    const recipe = await recipesService.editRecipe(recipeId, recipeFormValues)
     dispatch(editRecipeSuccess(recipe))
   } catch {
     dispatch(editRecipeError('Recipe edit error'))
   }
 }
 
-export const deleteRecipeRequest = (recipeId: Recipe['id']): AppThunk => async (
-  dispatch,
-  getState
-) => {
+export const deleteRecipeRequest = (recipeId: Recipe['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading())
-
-    const state = getState()
-    const recipes = state.game.recipes.filter((stateRecipe) => stateRecipe.id !== recipeId)
-
-    localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(recipes))
+    await recipesService.deleteRecipe(recipeId)
     dispatch(deleteRecipeSuccess(recipeId))
   } catch {
     dispatch(deleteRecipeError('Recipe delete error'))
   }
 }
 
-export const moveRecipeToBagRequest = (recipeId: Recipe['id']): AppThunk => async (
-  dispatch,
-  getState
-) => {
+export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading())
 
-    const state = getState()
-    const baggageDate = Date.now()
-    const recipes = state.game.recipes.map((stateRecipe) => {
-      if (stateRecipe.id === recipeId) {
-        return { ...stateRecipe, belongsTo: DUMMY_USER_ID, baggageDate }
-      }
-
-      return stateRecipe
-    })
-
-    localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(recipes))
-    dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate }))
+    const { baggageDate, belongsTo } = await recipesService.editRecipe(recipeId, {
+      belongsTo: DUMMY_USER_ID,
+    } as Partial<Recipe>)
+    dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate, belongsTo }))
   } catch {
     dispatch(moveRecipeToBagError('Move recipe to bag error'))
   }
 }
 
-export const extractRecipeFromBagRequest = (recipeId: Recipe['id']): AppThunk => async (
-  dispatch,
-  getState
+export const extractRecipeFromBagRequest = (recipeId: Recipe['_id']): AppThunk => async (
+  dispatch
 ) => {
   try {
     dispatch(startRecipesLoading())
-
-    const state = getState()
-    const recipes = state.game.recipes.map((stateRecipe) => {
-      if (stateRecipe.id === recipeId) {
-        return { ...stateRecipe, belongsTo: null, baggageDate: null }
-      }
-
-      return stateRecipe
-    })
-
-    localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(recipes))
+    await recipesService.editRecipe(recipeId, { belongsTo: null } as Partial<Recipe>)
     dispatch(extractRecipeFromBagSuccess(recipeId))
   } catch {
     dispatch(extractRecipeFromBagError('Extract recipe from bag error'))

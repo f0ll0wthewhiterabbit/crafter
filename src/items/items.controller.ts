@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Put, Param, Delete, HttpCode } from '@nestjs/common'
 import { Types } from 'mongoose'
 
 import { ItemsService } from './items.service'
@@ -30,6 +30,7 @@ export class ItemsController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') id: Types.ObjectId) {
     return this.itemsService.remove(id)
   }

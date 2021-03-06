@@ -18,7 +18,7 @@ const Recipes: FC = () => {
       {recipes
         .filter((recipe) => !recipe.belongsTo)
         .map((recipe) => (
-          <Unit unit={recipe} unitType={UNIT_TYPES.RECIPE} key={recipe.id} />
+          <Unit unit={recipe} unitType={UNIT_TYPES.RECIPE} key={recipe._id} />
         ))}
     </Board>
   )

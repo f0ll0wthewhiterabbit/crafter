@@ -39,7 +39,7 @@ const Bag: FC = () => {
   return (
     <Board title="Bag">
       {sortedBagUnits.map((unit) => (
-        <Unit unit={unit} unitType={unit.type} key={unit.id} />
+        <Unit unit={unit} unitType={unit.type} key={unit._id} />
       ))}
     </Board>
   )
