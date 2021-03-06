@@ -1,7 +1,8 @@
-import { Injectable, NotImplementedException } from '@nestjs/common'
+import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types, UpdateQuery } from 'mongoose'
 
+import { DUMMY_USER_ID } from 'src/recipes/recipes.service'
 import { CreateItemDto } from './dto/create-item.dto'
 import { UpdateItemDto } from './dto/update-item.dto'
 import { Item, ItemDocument } from './schemas/item.schema'
@@ -30,7 +31,11 @@ export class ItemsService {
       const { belongsTo } = await this.itemModel.findById(id).exec()
 
       if (belongsTo !== updateItemDto.belongsTo) {
-        // TODO: check current user id (belongsTo)
+        // TODO: fix using real userId
+        if (updateItemDto.belongsTo !== null && updateItemDto.belongsTo !== DUMMY_USER_ID) {
+          throw new ForbiddenException()
+        }
+
         updatedFields.baggageDate = updateItemDto.belongsTo ? new Date().toISOString() : null
       }
     }

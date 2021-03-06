@@ -1,5 +1,4 @@
 import { ArrayMinSize, ArrayUnique, IsArray, IsString, IsUrl } from 'class-validator'
-import { Types } from 'mongoose'
 
 export class CreateRecipeDto {
   @IsString()
@@ -11,5 +10,6 @@ export class CreateRecipeDto {
   @IsArray()
   @ArrayMinSize(2)
   @ArrayUnique()
-  readonly items: Types.ObjectId[]
+  @IsString({ each: true })
+  readonly items: string[]
 }

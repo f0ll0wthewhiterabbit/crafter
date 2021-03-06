@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Schema as MongooseSchema } from 'mongoose'
-
-import { Item } from 'src/items/schemas/item.schema'
+import { Document } from 'mongoose'
 
 export type RecipeDocument = Recipe & Document
 
@@ -13,8 +11,8 @@ export class Recipe {
   @Prop({ required: true })
   imageSrc: string
 
-  @Prop({ required: true, type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Item' }] })
-  items: Item[]
+  @Prop({ required: true })
+  items: string[]
 
   @Prop({ default: null })
   belongsTo: string | null

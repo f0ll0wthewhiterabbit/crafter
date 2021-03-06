@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types, UpdateQuery } from 'mongoose'
 
@@ -6,6 +11,8 @@ import { Item, ItemDocument } from 'src/items/schemas/item.schema'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
 import { Recipe, RecipeDocument } from './schemas/recipe.schema'
+
+export const DUMMY_USER_ID = '333b8775230f77072cb77333' // FIXME: this is a temporary solution
 
 @Injectable()
 export class RecipesService {
@@ -15,12 +22,7 @@ export class RecipesService {
   ) {}
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
-    const isItemAbsent = await this.isItemAbsent(createRecipeDto.items)
-
-    if (isItemAbsent) {
-      throw new NotFoundException("Item doesn't exist")
-    }
-
+    await this.checkItemsExistence(createRecipeDto.items)
     const createdCat = new this.recipeModel(createRecipeDto)
     return await createdCat.save()
   }
@@ -35,11 +37,7 @@ export class RecipesService {
 
   async update(id: Types.ObjectId, updateRecipeDto: UpdateRecipeDto): Promise<Recipe> {
     if (updateRecipeDto.items) {
-      const isItemAbsent = await this.isItemAbsent(updateRecipeDto.items)
-
-      if (isItemAbsent) {
-        throw new NotFoundException("Item doesn't exist")
-      }
+      await this.checkItemsExistence(updateRecipeDto.items)
     }
 
     const updatedFields = updateRecipeDto as any
@@ -48,7 +46,11 @@ export class RecipesService {
       const { belongsTo } = await this.recipeModel.findById(id).exec()
 
       if (belongsTo !== updateRecipeDto.belongsTo) {
-        // TODO: check current user id (belongsTo)
+        // TODO: fix using real userId
+        if (updateRecipeDto.belongsTo !== null && updateRecipeDto.belongsTo !== DUMMY_USER_ID) {
+          throw new ForbiddenException()
+        }
+
         updatedFields.baggageDate = updateRecipeDto.belongsTo ? new Date().toISOString() : null
       }
     }
@@ -71,15 +73,18 @@ export class RecipesService {
     return { removedRecipes: [removedRecipe.id] }
   }
 
-  private async isItemAbsent(items: Types.ObjectId[]): Promise<boolean> {
-    for (const itemId of items) {
-      const item = await this.itemModel.findById(itemId).limit(1)
+  private async checkItemsExistence(items: string[]): Promise<void> {
+    for (const itemTitle of items) {
+      const item = await this.itemModel
+        .findOne({
+          title: new RegExp(`^${itemTitle}$`, 'i'),
+          belongsTo: { $in: [null, DUMMY_USER_ID] }, // TODO: fix using real userId
+        })
+        .exec()
 
       if (item === null) {
-        return true
+        throw new NotFoundException("Item doesn't exist")
       }
     }
-
-    return false
   }
 }
