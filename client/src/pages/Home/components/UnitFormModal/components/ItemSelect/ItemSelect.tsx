@@ -14,7 +14,13 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
   fieldName,
   initialValue,
 }) => {
-  const { items } = useSelector((state: RootState) => state.game)
+  const itemTitles = useSelector((state: RootState) => {
+    const filteredItems = state.game.items.filter(
+      (item) => !item.belongsTo || item.belongsTo === DUMMY_USER_ID
+    )
+
+    return [...new Set(filteredItems.map((item) => item.title))]
+  })
   const [, , helpers] = useField(fieldName)
   const { setValue, setTouched } = helpers
 
@@ -36,13 +42,11 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
       onBlur={handleBlur}
       onClear={handleBlur}
     >
-      {items
-        .filter((item) => !item.belongsTo || item.belongsTo === DUMMY_USER_ID)
-        .map((item) => (
-          <Option key={item._id} value={item.title}>
-            {item.title}
-          </Option>
-        ))}
+      {itemTitles.map((itemTitle, index) => (
+        <Option key={`${itemTitle}-${index}`} value={itemTitle}>
+          {itemTitle}
+        </Option>
+      ))}
     </Select>
   )
 }
