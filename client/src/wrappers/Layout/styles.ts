@@ -19,6 +19,7 @@ export const Content = styled(AntdContent)`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 `
 
 export const Footer = styled(AntdFooter)`

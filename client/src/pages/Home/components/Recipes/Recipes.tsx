@@ -9,10 +9,12 @@ import AddButton from '@/pages/Home/components/AddButton'
 
 const Recipes: FC = () => {
   const { recipes } = useSelector((state: RootState) => state.game)
+  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
 
   return (
     <Board
       title="Recipes"
+      isLoaderVisible={recipesLoadingState === 'loading'}
       controls={<AddButton mode={UNIT_FORM_MODAL_MODES.RECIPE_ADD} title="Add recipe" />}
     >
       {recipes

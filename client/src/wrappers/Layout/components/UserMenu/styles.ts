@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
 `
 
 export const Button = styled(AntdButton)`
-  /* font-size: 18px; */
   color: ${({ theme }) => theme.colors.font.contrast};
   display: flex;
   align-items: center;

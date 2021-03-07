@@ -1,8 +1,9 @@
 import React, { FC } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Typography, Button } from 'antd'
 
 import { deleteItemRequest, deleteRecipeRequest } from '@/store/gameSlice'
+import { RootState } from '@/store/rootReducer'
 
 import { Modal, ContentWrapper, ExclamationIcon, IconWrapper, Controls } from './styles'
 
@@ -15,17 +16,16 @@ const DeleteModal: FC<{
   isRecipe: boolean
   handleClose: () => void
 }> = ({ isVisible, id, title, isRecipe, handleClose }) => {
+  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
+  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
   const dispatch = useDispatch()
 
   const handleConfirm = () => {
-    // TODO: loading
-    console.log('Delete confirm')
-
     if (id) {
-      isRecipe ? dispatch(deleteRecipeRequest(id)) : dispatch(deleteItemRequest(id))
+      isRecipe
+        ? dispatch(deleteRecipeRequest(id, handleClose))
+        : dispatch(deleteItemRequest(id, handleClose))
     }
-
-    handleClose()
   }
 
   return (
@@ -47,7 +47,11 @@ const DeleteModal: FC<{
       </ContentWrapper>
       <Controls>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button danger onClick={handleConfirm}>
+        <Button
+          danger
+          onClick={handleConfirm}
+          loading={itemsLoadingState === 'modalLoading' || recipesLoadingState === 'modalLoading'}
+        >
           Delete
         </Button>
       </Controls>

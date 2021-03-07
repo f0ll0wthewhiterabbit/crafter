@@ -7,12 +7,21 @@ import { DUMMY_USER_ID } from '@/constants/user.constants'
 import { itemsService } from '@/services/items.api'
 import { recipesService } from '@/services/recipes.api'
 
+type LoadingState =
+  | 'fetching'
+  | 'loading'
+  | 'modalLoading'
+  | 'bagLoading'
+  | 'loaded'
+  | 'error'
+  | null
+
 interface GameState {
   items: Item[]
-  isItemsLoading: boolean
+  itemsLoadingState: LoadingState
   itemsError: string | null
   recipes: Recipe[]
-  isRecipesLoading: boolean
+  recipesLoadingState: LoadingState
   recipesError: string | null
 }
 
@@ -30,16 +39,16 @@ interface MoveRecipeToBagPayload {
 
 const initialState: GameState = {
   items: [],
-  isItemsLoading: false,
+  itemsLoadingState: null,
   itemsError: null,
   recipes: [],
-  isRecipesLoading: false,
+  recipesLoadingState: null,
   recipesError: null,
 }
 
 const itemsLoadingFailed = (state: GameState, { payload: itemsError }: PayloadAction<string>) => {
   state.itemsError = itemsError
-  state.isItemsLoading = false
+  state.itemsLoadingState = 'error'
 }
 
 const recipesLoadingFailed = (
@@ -47,24 +56,24 @@ const recipesLoadingFailed = (
   { payload: recipesError }: PayloadAction<string>
 ) => {
   state.recipesError = recipesError
-  state.isRecipesLoading = false
+  state.recipesLoadingState = 'error'
 }
 
 const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    startItemsLoading(state) {
-      state.isItemsLoading = true
+    startItemsLoading(state, { payload: loadingState }: PayloadAction<LoadingState>) {
+      state.itemsLoadingState = loadingState
     },
     fetchItemsSuccess(state, { payload: items }: PayloadAction<Item[]>) {
       state.items = items
-      state.isItemsLoading = false
+      state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
     addItemSuccess(state, { payload: item }: PayloadAction<Item>) {
       state.items.push(item)
-      state.isItemsLoading = false
+      state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
     editItemSuccess(state, { payload: item }: PayloadAction<Item>) {
@@ -74,7 +83,7 @@ const gameSlice = createSlice({
         state.items[itemIndex] = item
       }
 
-      state.isItemsLoading = false
+      state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
     deleteItemSuccess(state, { payload: itemId }: PayloadAction<Item['_id']>) {
@@ -84,7 +93,7 @@ const gameSlice = createSlice({
         state.items.splice(itemIndex, 1)
       }
 
-      state.isItemsLoading = false
+      state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
     moveItemToBagSuccess(state, { payload }: PayloadAction<MoveItemToBagPayload>) {
@@ -96,7 +105,7 @@ const gameSlice = createSlice({
         state.items[itemIndex].baggageDate = baggageDate
       }
 
-      state.isItemsLoading = false
+      state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
     extractItemFromBagSuccess(state, { payload: itemId }: PayloadAction<Item['_id']>) {
@@ -108,7 +117,7 @@ const gameSlice = createSlice({
         state.items.push(state.items.splice(itemIndex, 1)[0])
       }
 
-      state.isItemsLoading = false
+      state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
     fetchItemsError: itemsLoadingFailed,
@@ -117,17 +126,17 @@ const gameSlice = createSlice({
     deleteItemError: itemsLoadingFailed,
     moveItemToBagError: itemsLoadingFailed,
     extractItemFromBagError: itemsLoadingFailed,
-    startRecipesLoading(state) {
-      state.isRecipesLoading = true
+    startRecipesLoading(state, { payload: loadingState }: PayloadAction<LoadingState>) {
+      state.recipesLoadingState = loadingState
     },
     fetchRecipesSuccess(state, { payload: recipes }: PayloadAction<Recipe[]>) {
       state.recipes = recipes
-      state.isRecipesLoading = false
+      state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
     addRecipeSuccess(state, { payload: recipe }: PayloadAction<Recipe>) {
       state.recipes.push(recipe)
-      state.isRecipesLoading = false
+      state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
     editRecipeSuccess(state, { payload: recipe }: PayloadAction<Recipe>) {
@@ -137,7 +146,7 @@ const gameSlice = createSlice({
         state.recipes[recipeIndex] = recipe
       }
 
-      state.isRecipesLoading = false
+      state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
     deleteRecipeSuccess(state, { payload: recipeId }: PayloadAction<Recipe['_id']>) {
@@ -147,7 +156,7 @@ const gameSlice = createSlice({
         state.recipes.splice(recipeIndex, 1)
       }
 
-      state.isRecipesLoading = false
+      state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
     moveRecipeToBagSuccess(state, { payload }: PayloadAction<MoveRecipeToBagPayload>) {
@@ -159,7 +168,7 @@ const gameSlice = createSlice({
         state.recipes[recipeIndex].baggageDate = baggageDate
       }
 
-      state.isRecipesLoading = false
+      state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
     extractRecipeFromBagSuccess(state, { payload: recipeId }: PayloadAction<Recipe['_id']>) {
@@ -171,7 +180,7 @@ const gameSlice = createSlice({
         state.recipes.push(state.recipes.splice(recipeIndex, 1)[0])
       }
 
-      state.isRecipesLoading = false
+      state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
     fetchRecipesError: recipesLoadingFailed,
@@ -215,7 +224,7 @@ export const {
 // Items request actions
 export const fetchItemsRequest = (): AppThunk => async (dispatch) => {
   try {
-    dispatch(startItemsLoading())
+    dispatch(startItemsLoading('fetching'))
 
     const items = await itemsService.getItems()
 
@@ -229,33 +238,44 @@ export const fetchItemsRequest = (): AppThunk => async (dispatch) => {
   }
 }
 
-export const addItemRequest = (itemFormValues: ItemForm): AppThunk => async (dispatch) => {
+export const addItemRequest = (
+  itemFormValues: ItemForm,
+  successCallback: () => void
+): AppThunk => async (dispatch) => {
   try {
-    dispatch(startItemsLoading())
+    dispatch(startItemsLoading('modalLoading'))
     const item = await itemsService.addItem(itemFormValues)
     dispatch(addItemSuccess(item))
+    successCallback()
   } catch {
     dispatch(addItemError('Item add error'))
   }
 }
 
-export const editItemRequest = (itemId: Item['_id'], itemFormValues: ItemForm): AppThunk => async (
-  dispatch
-) => {
+export const editItemRequest = (
+  itemId: Item['_id'],
+  itemFormValues: ItemForm,
+  successCallback: () => void
+): AppThunk => async (dispatch) => {
   try {
-    dispatch(startItemsLoading())
+    dispatch(startItemsLoading('modalLoading'))
     const item = await itemsService.editItem(itemId, itemFormValues)
     dispatch(editItemSuccess(item))
+    successCallback()
   } catch {
     dispatch(editItemError('Item edit error'))
   }
 }
 
-export const deleteItemRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
+export const deleteItemRequest = (
+  itemId: Item['_id'],
+  successCallback: () => void
+): AppThunk => async (dispatch) => {
   try {
-    dispatch(startItemsLoading())
+    dispatch(startItemsLoading('modalLoading'))
     await itemsService.deleteItem(itemId)
     dispatch(deleteItemSuccess(itemId))
+    successCallback()
   } catch {
     dispatch(deleteItemError('Item delete error'))
   }
@@ -263,7 +283,7 @@ export const deleteItemRequest = (itemId: Item['_id']): AppThunk => async (dispa
 
 export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
-    dispatch(startItemsLoading())
+    dispatch(startItemsLoading('bagLoading'))
     const { baggageDate, belongsTo } = await itemsService.editItem(itemId, {
       belongsTo: DUMMY_USER_ID,
     } as Partial<Item>)
@@ -275,7 +295,7 @@ export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (di
 
 export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
-    dispatch(startItemsLoading())
+    dispatch(startItemsLoading('bagLoading'))
     await itemsService.editItem(itemId, { belongsTo: null } as Partial<Item>)
     dispatch(extractItemFromBagSuccess(itemId))
   } catch {
@@ -286,7 +306,7 @@ export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => asyn
 // Recipes request actions
 export const fetchRecipesRequest = (): AppThunk => async (dispatch) => {
   try {
-    dispatch(startRecipesLoading())
+    dispatch(startRecipesLoading('fetching'))
 
     const recipes = await recipesService.getRecipes()
 
@@ -300,11 +320,15 @@ export const fetchRecipesRequest = (): AppThunk => async (dispatch) => {
   }
 }
 
-export const addRecipeRequest = (recipeFormValues: RecipeForm): AppThunk => async (dispatch) => {
+export const addRecipeRequest = (
+  recipeFormValues: RecipeForm,
+  successCallback: () => void
+): AppThunk => async (dispatch) => {
   try {
-    dispatch(startRecipesLoading())
+    dispatch(startRecipesLoading('modalLoading'))
     const recipe = await recipesService.addRecipe(recipeFormValues)
     dispatch(addRecipeSuccess(recipe))
+    successCallback()
   } catch {
     dispatch(addRecipeError('Recipe add error'))
   }
@@ -312,22 +336,28 @@ export const addRecipeRequest = (recipeFormValues: RecipeForm): AppThunk => asyn
 
 export const editRecipeRequest = (
   recipeId: Recipe['_id'],
-  recipeFormValues: RecipeForm
+  recipeFormValues: RecipeForm,
+  successCallback: () => void
 ): AppThunk => async (dispatch) => {
   try {
-    dispatch(startRecipesLoading())
+    dispatch(startRecipesLoading('modalLoading'))
     const recipe = await recipesService.editRecipe(recipeId, recipeFormValues)
     dispatch(editRecipeSuccess(recipe))
+    successCallback()
   } catch {
     dispatch(editRecipeError('Recipe edit error'))
   }
 }
 
-export const deleteRecipeRequest = (recipeId: Recipe['_id']): AppThunk => async (dispatch) => {
+export const deleteRecipeRequest = (
+  recipeId: Recipe['_id'],
+  successCallback: () => void
+): AppThunk => async (dispatch) => {
   try {
-    dispatch(startRecipesLoading())
+    dispatch(startRecipesLoading('modalLoading'))
     await recipesService.deleteRecipe(recipeId)
     dispatch(deleteRecipeSuccess(recipeId))
+    successCallback()
   } catch {
     dispatch(deleteRecipeError('Recipe delete error'))
   }
@@ -335,11 +365,12 @@ export const deleteRecipeRequest = (recipeId: Recipe['_id']): AppThunk => async 
 
 export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => async (dispatch) => {
   try {
-    dispatch(startRecipesLoading())
+    dispatch(startRecipesLoading('bagLoading'))
 
     const { baggageDate, belongsTo } = await recipesService.editRecipe(recipeId, {
       belongsTo: DUMMY_USER_ID,
     } as Partial<Recipe>)
+
     dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate, belongsTo }))
   } catch {
     dispatch(moveRecipeToBagError('Move recipe to bag error'))
@@ -350,7 +381,7 @@ export const extractRecipeFromBagRequest = (recipeId: Recipe['_id']): AppThunk =
   dispatch
 ) => {
   try {
-    dispatch(startRecipesLoading())
+    dispatch(startRecipesLoading('bagLoading'))
     await recipesService.editRecipe(recipeId, { belongsTo: null } as Partial<Recipe>)
     dispatch(extractRecipeFromBagSuccess(recipeId))
   } catch {

@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import { UNIT_TYPES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
 import { DUMMY_USER_ID } from '@/constants/user.constants'
-
 import Board from '@/pages/Home/components/Board'
 import Unit from '@/pages/Home/components/Unit'
 import { TypedUnit } from '@/types/unit.types'
@@ -37,7 +36,7 @@ const Bag: FC = () => {
   })
 
   return (
-    <Board title="Bag">
+    <Board title="Bag" isLoaderVisible={false}>
       {sortedBagUnits.map((unit) => (
         <Unit unit={unit} unitType={unit.type} key={unit._id} />
       ))}

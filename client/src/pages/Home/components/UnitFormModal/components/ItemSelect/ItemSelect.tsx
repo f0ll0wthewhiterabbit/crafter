@@ -19,7 +19,6 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
   const { setValue, setTouched } = helpers
 
   const handleChange = (value: SelectValue) => {
-    console.log('Selected items:', value)
     setValue(value)
   }
 

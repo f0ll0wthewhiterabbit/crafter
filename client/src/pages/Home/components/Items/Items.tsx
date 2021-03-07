@@ -9,10 +9,12 @@ import Unit from '@/pages/Home/components/Unit'
 
 const Items: FC = () => {
   const { items } = useSelector((state: RootState) => state.game)
+  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
 
   return (
     <Board
       title="Items"
+      isLoaderVisible={itemsLoadingState === 'loading'}
       controls={<AddButton mode={UNIT_FORM_MODAL_MODES.ITEM_ADD} title="Add item" />}
     >
       {items

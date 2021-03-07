@@ -15,6 +15,7 @@ declare module 'styled-components' {
         board: string
         footer: string
         unit: string
+        loader: string
       }
       border: {
         board: string

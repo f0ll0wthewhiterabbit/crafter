@@ -9,6 +9,7 @@ export const Wrapper = styled.section`
   border-radius: 20px;
   padding: 0 20px 20px;
   max-width: calc(100% / 3);
+  position: relative;
 `
 
 export const Header = styled.header`

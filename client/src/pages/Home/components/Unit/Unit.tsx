@@ -65,7 +65,6 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
 
   const moveToBag = () => {
     isRecipe ? dispatch(moveRecipeToBagRequest(id)) : dispatch(moveItemToBagRequest(id))
-    console.log('added to bag')
   }
 
   const handleImageWrapperKeyPress = (event: KeyboardEvent) => {

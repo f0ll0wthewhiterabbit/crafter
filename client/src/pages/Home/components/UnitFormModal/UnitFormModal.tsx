@@ -1,19 +1,20 @@
 import React, { FC, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import { Input, Button, Tooltip } from 'antd'
 
-import { Item, ItemForm } from '@/types/item.types'
+import { ItemForm } from '@/types/item.types'
 import { Recipe, RecipeForm } from '@/types/recipe.types'
-import { Unit } from '@/types/unit.types'
-import { UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
 import {
   addItemRequest,
   addRecipeRequest,
   editItemRequest,
   editRecipeRequest,
 } from '@/store/gameSlice'
+import { Unit } from '@/types/unit.types'
+import { UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
+import { RootState } from '@/store/rootReducer'
 
 import ItemSelect from './components/ItemSelect'
 import { Modal, Form, FormBody, FormItemRequired, Controls } from './styles'
@@ -33,8 +34,9 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
   unit,
   handleClose,
 }) => {
+  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
+  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
   const dispatch = useDispatch()
-  const [isLoading, setIsLoading] = useState(false)
   const id = unit?._id || ''
   const title = unit?.title || ''
   const imageSrc = unit?.imageSrc || ''
@@ -45,34 +47,18 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
   const isRecipe = isRecipeAddMode || isRecipeEditMode
 
   const handleConfirm = (values: ItemForm | RecipeForm) => {
-    setIsLoading(true)
-
     if (isItemEditMode || isRecipeEditMode) {
-      setTimeout(() => {
-        console.log('Edit confirm', values)
-
-        if (isRecipeEditMode) {
-          dispatch(editRecipeRequest(id, values as RecipeForm))
-        } else {
-          dispatch(editItemRequest(id, values as ItemForm))
-        }
-
-        handleClose()
-        setIsLoading(false)
-      }, 3000)
+      if (isRecipeEditMode) {
+        dispatch(editRecipeRequest(id, values as RecipeForm, handleClose))
+      } else {
+        dispatch(editItemRequest(id, values as ItemForm, handleClose))
+      }
     } else {
-      setTimeout(() => {
-        console.log('Add confirm', values)
-
-        if (isRecipeAddMode) {
-          dispatch(addRecipeRequest(values as RecipeForm))
-        } else {
-          dispatch(addItemRequest(values as ItemForm))
-        }
-
-        handleClose()
-        setIsLoading(false)
-      }, 3000)
+      if (isRecipeAddMode) {
+        dispatch(addRecipeRequest(values as RecipeForm, handleClose))
+      } else {
+        dispatch(addItemRequest(values as ItemForm, handleClose))
+      }
     }
   }
 
@@ -159,7 +145,9 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
                 <Button
                   type="primary"
                   htmlType="submit"
-                  loading={isLoading}
+                  loading={
+                    itemsLoadingState === 'modalLoading' || recipesLoadingState === 'modalLoading'
+                  }
                   disabled={!dirty || !isValid}
                 >
                   {isItemEditMode || isRecipeEditMode ? 'Edit' : 'Add'}
