@@ -1,13 +1,7 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-  NotImplementedException,
-} from '@nestjs/common'
+import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types, UpdateQuery } from 'mongoose'
 
-import { Item, ItemDocument } from 'src/items/schemas/item.schema'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
 import { Recipe, RecipeDocument } from './schemas/recipe.schema'
@@ -16,14 +10,11 @@ export const DUMMY_USER_ID = '333b8775230f77072cb77333' // FIXME: this is a temp
 
 @Injectable()
 export class RecipesService {
-  constructor(
-    @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
-    @InjectModel(Item.name) private itemModel: Model<ItemDocument>
-  ) {}
+  constructor(@InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>) {}
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
-    await this.checkItemsExistence(createRecipeDto.items)
     const createdCat = new this.recipeModel(createRecipeDto)
+
     return await createdCat.save()
   }
 
@@ -36,10 +27,6 @@ export class RecipesService {
   }
 
   async update(id: Types.ObjectId, updateRecipeDto: UpdateRecipeDto): Promise<Recipe> {
-    if (updateRecipeDto.items) {
-      await this.checkItemsExistence(updateRecipeDto.items)
-    }
-
     const updatedFields = updateRecipeDto as any
 
     if (updateRecipeDto.belongsTo || updateRecipeDto.belongsTo === null) {
@@ -71,20 +58,5 @@ export class RecipesService {
     }
 
     return { removedRecipes: [removedRecipe.id] }
-  }
-
-  private async checkItemsExistence(items: string[]): Promise<void> {
-    for (const itemTitle of items) {
-      const item = await this.itemModel
-        .findOne({
-          title: new RegExp(`^${itemTitle}$`, 'i'),
-          belongsTo: { $in: [null, DUMMY_USER_ID] }, // TODO: fix using real userId
-        })
-        .exec()
-
-      if (item === null) {
-        throw new NotFoundException("Item doesn't exist")
-      }
-    }
   }
 }
