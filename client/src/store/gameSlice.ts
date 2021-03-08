@@ -126,6 +126,10 @@ const gameSlice = createSlice({
     deleteItemError: itemsLoadingFailed,
     moveItemToBagError: itemsLoadingFailed,
     extractItemFromBagError: itemsLoadingFailed,
+    resetItemsError(state) {
+      state.itemsLoadingState = null
+      state.itemsError = null
+    },
     startRecipesLoading(state, { payload: loadingState }: PayloadAction<LoadingState>) {
       state.recipesLoadingState = loadingState
     },
@@ -189,6 +193,10 @@ const gameSlice = createSlice({
     deleteRecipeError: recipesLoadingFailed,
     moveRecipeToBagError: recipesLoadingFailed,
     extractRecipeFromBagError: recipesLoadingFailed,
+    resetRecipesError(state) {
+      state.recipesLoadingState = null
+      state.recipesError = null
+    },
   },
 })
 
@@ -206,6 +214,7 @@ export const {
   moveItemToBagError,
   extractItemFromBagSuccess,
   extractItemFromBagError,
+  resetItemsError,
   startRecipesLoading,
   fetchRecipesSuccess,
   fetchRecipesError,
@@ -219,6 +228,7 @@ export const {
   moveRecipeToBagError,
   extractRecipeFromBagSuccess,
   extractRecipeFromBagError,
+  resetRecipesError,
 } = gameSlice.actions
 
 // Items request actions
@@ -248,7 +258,7 @@ export const addItemRequest = (
     dispatch(addItemSuccess(item))
     successCallback()
   } catch {
-    dispatch(addItemError('Item add error'))
+    dispatch(addItemError("Couldn't create item"))
   }
 }
 
@@ -263,7 +273,7 @@ export const editItemRequest = (
     dispatch(editItemSuccess(item))
     successCallback()
   } catch {
-    dispatch(editItemError('Item edit error'))
+    dispatch(editItemError("Couldn't update item"))
   }
 }
 
@@ -277,7 +287,7 @@ export const deleteItemRequest = (
     dispatch(deleteItemSuccess(itemId))
     successCallback()
   } catch {
-    dispatch(deleteItemError('Item delete error'))
+    dispatch(deleteItemError("Couldn't delete item"))
   }
 }
 
@@ -289,7 +299,7 @@ export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (di
     } as Partial<Item>)
     dispatch(moveItemToBagSuccess({ itemId, baggageDate, belongsTo }))
   } catch {
-    dispatch(moveItemToBagError('Move item to bag error'))
+    dispatch(moveItemToBagError("Couldn't move item to bag"))
   }
 }
 
@@ -299,7 +309,7 @@ export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => asyn
     await itemsService.editItem(itemId, { belongsTo: null } as Partial<Item>)
     dispatch(extractItemFromBagSuccess(itemId))
   } catch {
-    dispatch(extractItemFromBagError('Extract item from bag error'))
+    dispatch(extractItemFromBagError("Couldn't extract item from bag"))
   }
 }
 
@@ -330,7 +340,7 @@ export const addRecipeRequest = (
     dispatch(addRecipeSuccess(recipe))
     successCallback()
   } catch {
-    dispatch(addRecipeError('Recipe add error'))
+    dispatch(addRecipeError("Couldn't create recipe"))
   }
 }
 
@@ -345,7 +355,7 @@ export const editRecipeRequest = (
     dispatch(editRecipeSuccess(recipe))
     successCallback()
   } catch {
-    dispatch(editRecipeError('Recipe edit error'))
+    dispatch(editRecipeError("Couldn't update recipe"))
   }
 }
 
@@ -359,7 +369,7 @@ export const deleteRecipeRequest = (
     dispatch(deleteRecipeSuccess(recipeId))
     successCallback()
   } catch {
-    dispatch(deleteRecipeError('Recipe delete error'))
+    dispatch(deleteRecipeError("Couldn't delete recipe"))
   }
 }
 
@@ -373,7 +383,7 @@ export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => asy
 
     dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate, belongsTo }))
   } catch {
-    dispatch(moveRecipeToBagError('Move recipe to bag error'))
+    dispatch(moveRecipeToBagError("Couldn't move recipe to bag"))
   }
 }
 
@@ -385,7 +395,7 @@ export const extractRecipeFromBagRequest = (recipeId: Recipe['_id']): AppThunk =
     await recipesService.editRecipe(recipeId, { belongsTo: null } as Partial<Recipe>)
     dispatch(extractRecipeFromBagSuccess(recipeId))
   } catch {
-    dispatch(extractRecipeFromBagError('Extract recipe from bag error'))
+    dispatch(extractRecipeFromBagError("Couldn't extract recipe from bag"))
   }
 }
 
