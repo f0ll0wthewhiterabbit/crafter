@@ -1,6 +1,6 @@
 import { apiClient } from '@/utils/api'
 import { Recipe, RecipeForm } from '@/types/recipe.types'
-import { RecipeRequest } from '@/types/request.types'
+import { RecipeDeleteRequest, RecipeRequest } from '@/types/request.types'
 
 export const recipesService = {
   async getRecipes(isFiltered = true): Promise<RecipeRequest[]> {
@@ -21,8 +21,10 @@ export const recipesService = {
     return recipe
   },
 
-  async deleteRecipe(recipeId: Recipe['_id']): Promise<void> {
-    await apiClient.delete(`/recipes/${recipeId}`)
+  async deleteRecipe(recipeId: Recipe['_id']): Promise<RecipeDeleteRequest> {
+    const { data } = await apiClient.delete(`/recipes/${recipeId}`)
+
+    return data
   },
 
   async bag(recipeId: Recipe['_id']): Promise<RecipeRequest> {

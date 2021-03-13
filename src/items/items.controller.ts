@@ -6,7 +6,6 @@ import {
   Put,
   Param,
   Delete,
-  HttpCode,
   ParseBoolPipe,
   Query,
 } from '@nestjs/common'
@@ -41,7 +40,6 @@ export class ItemsController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
   remove(@Param('id') id: Types.ObjectId) {
     return this.itemsService.remove(id)
   }

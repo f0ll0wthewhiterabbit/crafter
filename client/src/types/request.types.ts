@@ -10,3 +10,12 @@ export interface Request {
 export interface ItemRequest extends Item, Request {}
 
 export interface RecipeRequest extends Recipe, Request {}
+
+export interface ItemDeleteRequest {
+  removedItems: Item['_id'][]
+  removedRecipes: Recipe['_id'][]
+}
+
+export interface RecipeDeleteRequest {
+  removedRecipes: Recipe['_id'][]
+}

@@ -1,6 +1,6 @@
 import { apiClient } from '@/utils/api'
 import { Item, ItemForm } from '@/types/item.types'
-import { ItemRequest } from '@/types/request.types'
+import { ItemDeleteRequest, ItemRequest } from '@/types/request.types'
 
 export const itemsService = {
   async getItems(isFiltered = true): Promise<ItemRequest[]> {
@@ -21,8 +21,10 @@ export const itemsService = {
     return item
   },
 
-  async deleteItem(itemId: Item['_id']): Promise<void> {
-    await apiClient.delete(`/items/${itemId}`)
+  async deleteItem(itemId: Item['_id']): Promise<ItemDeleteRequest> {
+    const { data } = await apiClient.delete(`/items/${itemId}`)
+
+    return data
   },
 
   async bag(itemId: Item['_id']): Promise<ItemRequest> {

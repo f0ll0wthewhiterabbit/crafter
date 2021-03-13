@@ -44,14 +44,30 @@ export class ItemsService {
       .exec()
   }
 
-  async remove(id: Types.ObjectId): Promise<{ removedItems: Types.ObjectId[] }> {
+  async remove(
+    id: Types.ObjectId
+  ): Promise<{ removedItems: Types.ObjectId[]; removedRecipes: Types.ObjectId[] }> {
     const removedItem = await this.itemModel.findByIdAndDelete(id).exec()
 
     if (!removedItem) {
       throw new NotImplementedException()
     }
 
-    return { removedItems: [removedItem.id] }
+    const { parentItems, parentRecipe } = removedItem
+    const removedItems = [removedItem.id]
+    const removedRecipes = []
+
+    if (parentRecipe) {
+      await this.recipeModel.findByIdAndDelete(parentRecipe)
+      removedRecipes.push(parentRecipe)
+    }
+
+    if (parentItems.length) {
+      await this.itemModel.deleteMany({ _id: { $in: parentItems } })
+      removedRecipes.push(...parentItems)
+    }
+
+    return { removedItems, removedRecipes }
   }
 
   async bag(id: Types.ObjectId): Promise<Item> {

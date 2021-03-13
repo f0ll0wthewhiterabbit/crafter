@@ -7,7 +7,6 @@ import {
   Param,
   Query,
   Delete,
-  HttpCode,
   ParseBoolPipe,
 } from '@nestjs/common'
 import { Types } from 'mongoose'
@@ -41,7 +40,6 @@ export class RecipesController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
   remove(@Param('id') id: Types.ObjectId) {
     return this.recipesService.remove(id)
   }
