@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, HttpCode } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Query,
+  Delete,
+  HttpCode,
+  ParseBoolPipe,
+} from '@nestjs/common'
 import { Types } from 'mongoose'
 
 import { RecipesService } from './recipes.service'
@@ -15,8 +26,8 @@ export class RecipesController {
   }
 
   @Get()
-  findAll() {
-    return this.recipesService.findAll()
+  findAll(@Query('filterParents', ParseBoolPipe) filterParents: boolean) {
+    return this.recipesService.findAll(filterParents)
   }
 
   @Get(':id')
@@ -33,5 +44,15 @@ export class RecipesController {
   @HttpCode(204)
   remove(@Param('id') id: Types.ObjectId) {
     return this.recipesService.remove(id)
+  }
+
+  @Get('bag/:id')
+  bag(@Param('id') id: Types.ObjectId) {
+    return this.recipesService.bag(id)
+  }
+
+  @Get('unbag/:id')
+  unbag(@Param('id') id: Types.ObjectId) {
+    return this.recipesService.unbag(id)
   }
 }

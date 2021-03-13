@@ -11,6 +11,7 @@ import {
   DescriptionList,
   ItemsList,
 } from './styles'
+import { Item } from '@/types/item.types'
 
 interface UnitModalProps {
   isVisible: boolean
@@ -22,7 +23,8 @@ interface UnitModalProps {
 const UnitModal: FC<UnitModalProps> = ({ isVisible, unit, isRecipe, handleClose }) => {
   const title = unit.title
   const imageSrc = unit.imageSrc
-  const items = (unit as Recipe).items || []
+  const itemTitles = (unit as Recipe).itemTitles || []
+  const isCraftedItem = Boolean((unit as Item).parentRecipe)
 
   return (
     <Modal
@@ -39,14 +41,14 @@ const UnitModal: FC<UnitModalProps> = ({ isVisible, unit, isRecipe, handleClose 
       <DescriptionWrapper>
         <DescriptionList>
           <li>
-            <b>Type:</b> Recipe
+            <b>Type:</b> {isRecipe ? 'Recipe' : isCraftedItem ? 'Crafted Item' : 'Item'}
           </li>
           {isRecipe && (
             <li>
               <b>Items:</b>
               <ItemsList>
-                {items.map((item, index) => (
-                  <li key={`${item}-${index}`}>{item}</li>
+                {itemTitles.map((itemTitle, index) => (
+                  <li key={`${itemTitle}-${index}`}>{itemTitle}</li>
                 ))}
               </ItemsList>
             </li>

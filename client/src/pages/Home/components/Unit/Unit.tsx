@@ -12,6 +12,7 @@ import DeleteModal from '@/pages/Home/components/DeleteModal'
 import UnitFormModal from '@/pages/Home/components/UnitFormModal'
 import UnitModal from '@/pages/Home/components/UnitModal'
 import { Unit as UnitType } from '@/types/unit.types'
+import { Item } from '@/types/item.types'
 import { UNIT_TYPES, UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
 import {
   extractItemFromBagRequest,
@@ -20,7 +21,7 @@ import {
   moveRecipeToBagRequest,
 } from '@/store/gameSlice'
 
-import { ImageWrapper, Image, Controls } from './styles'
+import { Wrapper, ImageWrapper, Image, Controls } from './styles'
 
 const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) => {
   const dispatch = useDispatch()
@@ -30,6 +31,7 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
   const { _id: id, title, imageSrc, belongsTo } = unit
   const isRecipe = unitType === UNIT_TYPES.RECIPE
+  const isCraftedItem = Boolean((unit as Item).parentRecipe)
 
   const handleImageWrapperFocus = () => {
     setIsFocused(true)
@@ -110,9 +112,13 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
   }
 
   return (
-    <>
+    <Wrapper isCraftedItem={isCraftedItem}>
       <Tooltip title={title}>
-        <Badge count={isRecipe ? 'Recipe' : 0} showZero={false} offset={[-20, 0]}>
+        <Badge
+          count={isRecipe ? 'Recipe' : isCraftedItem ? 'Crafted' : 0}
+          showZero={false}
+          offset={[-20, 0]}
+        >
           <ImageWrapper
             tabIndex={0}
             onFocus={handleImageWrapperFocus}
@@ -151,7 +157,7 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
         isRecipe={isRecipe}
         handleClose={closeUnitModal}
       />
-    </>
+    </Wrapper>
   )
 }
 

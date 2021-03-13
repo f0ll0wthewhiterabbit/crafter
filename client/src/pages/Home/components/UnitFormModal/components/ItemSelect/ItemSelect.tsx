@@ -16,7 +16,7 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
 }) => {
   const itemTitles = useSelector((state: RootState) => {
     const filteredItems = state.game.items.filter(
-      (item) => !item.belongsTo || item.belongsTo === DUMMY_USER_ID
+      (item) => (!item.belongsTo || item.belongsTo === DUMMY_USER_ID) && !item.parentRecipe
     )
 
     return [...new Set(filteredItems.map((item) => item.title))]

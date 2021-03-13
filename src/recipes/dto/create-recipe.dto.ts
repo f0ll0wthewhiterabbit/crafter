@@ -1,5 +1,7 @@
 import { ArrayMinSize, ArrayUnique, IsArray, IsString, IsUrl } from 'class-validator'
 
+export const MIN_NUMBER_OF_ITEMS_IN_RECIPE = 2
+
 export class CreateRecipeDto {
   @IsString()
   readonly title: string
@@ -8,8 +10,8 @@ export class CreateRecipeDto {
   readonly imageSrc: string
 
   @IsArray()
-  @ArrayMinSize(2)
+  @ArrayMinSize(MIN_NUMBER_OF_ITEMS_IN_RECIPE)
   @ArrayUnique()
   @IsString({ each: true })
-  readonly items: string[]
+  readonly itemTitles: string[]
 }

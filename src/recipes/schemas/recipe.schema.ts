@@ -12,13 +12,16 @@ export class Recipe {
   imageSrc: string
 
   @Prop({ required: true })
-  items: string[]
+  itemTitles: string[]
 
   @Prop({ default: null })
   belongsTo: string | null
 
   @Prop({ default: null })
   baggageDate: string | null
+
+  @Prop({ default: false })
+  isParent: boolean
 }
 
 export const RecipeSchema = SchemaFactory.createForClass(Recipe)

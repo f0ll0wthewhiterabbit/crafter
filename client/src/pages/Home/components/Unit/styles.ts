@@ -1,5 +1,12 @@
 import styled from 'styled-components'
 
+export const Wrapper = styled.div<{ isCraftedItem: boolean }>`
+  .ant-badge-count {
+    background: ${({ isCraftedItem, theme }) =>
+      isCraftedItem ? theme.colors.background.badgeItem : theme.colors.background.badgeRecipe};
+  }
+`
+
 export const ImageWrapper = styled.div<{ tabIndex: number }>`
   width: 130px;
   height: 130px;

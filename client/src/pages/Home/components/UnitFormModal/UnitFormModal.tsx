@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
@@ -40,7 +40,7 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
   const id = unit?._id || ''
   const title = unit?.title || ''
   const imageSrc = unit?.imageSrc || ''
-  const items = (unit as Recipe)?.items || []
+  const itemTitles = (unit as Recipe)?.itemTitles || []
   const isItemEditMode = mode === UNIT_FORM_MODAL_MODES.ITEM_EDIT
   const isRecipeAddMode = mode === UNIT_FORM_MODAL_MODES.RECIPE_ADD
   const isRecipeEditMode = mode === UNIT_FORM_MODAL_MODES.RECIPE_EDIT
@@ -73,12 +73,14 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
       onCancel={handleClose}
     >
       <Formik
-        initialValues={{ title, imageSrc, ...(isRecipe && { items }) }}
+        initialValues={{ title, imageSrc, ...(isRecipe && { itemTitles }) }}
         validationSchema={Yup.object({
           title: Yup.string().required('Title is required'),
-          imageSrc: Yup.string().required('Image is required'),
+          imageSrc: Yup.string()
+            .url('Please, provide a valid URL for image')
+            .required('Image is required'),
           ...((isRecipeAddMode || isRecipeEditMode) && {
-            items: Yup.array()
+            itemTitles: Yup.array()
               .required('Items are required')
               .min(2, 'The recipe should contain at least two items'),
           }),
@@ -122,13 +124,13 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
               </FormItemRequired>
               {isRecipe && (
                 <FormItemRequired
-                  name="items"
+                  name="itemTitles"
                   label="Items"
                   colon={false}
-                  hasFeedback={touched.items}
-                  validateStatus={errors.items && touched.items ? 'error' : ''}
+                  hasFeedback={touched.itemTitles}
+                  validateStatus={errors.itemTitles && touched.itemTitles ? 'error' : ''}
                 >
-                  <ItemSelect fieldName="items" initialValue={items} />
+                  <ItemSelect fieldName="itemTitles" initialValue={itemTitles} />
                 </FormItemRequired>
               )}
             </FormBody>
@@ -138,7 +140,7 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
                 title={
                   (touched.title && errors.title) ||
                   (touched.imageSrc && errors.imageSrc) ||
-                  (touched.items && errors.items) ||
+                  (touched.itemTitles && errors.itemTitles) ||
                   ''
                 }
               >

@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Item, ItemForm } from '@/types/item.types'
 import { Recipe, RecipeForm } from '@/types/recipe.types'
 import { AppThunk } from '@/store/store'
-import { DUMMY_USER_ID } from '@/constants/user.constants'
 import { itemsService } from '@/services/items.api'
 import { recipesService } from '@/services/recipes.api'
 
@@ -13,6 +12,7 @@ type LoadingState =
   | 'modalLoading'
   | 'bagLoading'
   | 'loaded'
+  | 'crafted'
   | 'error'
   | null
 
@@ -23,6 +23,16 @@ interface GameState {
   recipes: Recipe[]
   recipesLoadingState: LoadingState
   recipesError: string | null
+}
+
+interface FetchItemsPayload {
+  items: Item[]
+  isItemCrafted: boolean
+}
+
+interface DeleteRecipePayload {
+  recipeId: Recipe['_id']
+  isItemCrafted: boolean
 }
 
 interface MoveItemToBagPayload {
@@ -66,9 +76,11 @@ const gameSlice = createSlice({
     startItemsLoading(state, { payload: loadingState }: PayloadAction<LoadingState>) {
       state.itemsLoadingState = loadingState
     },
-    fetchItemsSuccess(state, { payload: items }: PayloadAction<Item[]>) {
+    fetchItemsSuccess(state, { payload }: PayloadAction<FetchItemsPayload>) {
+      const { items, isItemCrafted } = payload
+
       state.items = items
-      state.itemsLoadingState = 'loaded'
+      state.itemsLoadingState = isItemCrafted ? 'crafted' : 'loaded'
       state.itemsError = null
     },
     addItemSuccess(state, { payload: item }: PayloadAction<Item>) {
@@ -153,14 +165,15 @@ const gameSlice = createSlice({
       state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
-    deleteRecipeSuccess(state, { payload: recipeId }: PayloadAction<Recipe['_id']>) {
+    deleteRecipeSuccess(state, { payload }: PayloadAction<DeleteRecipePayload>) {
+      const { recipeId, isItemCrafted } = payload
       const recipeIndex = state.recipes.findIndex((stateRecipe) => stateRecipe._id === recipeId)
 
       if (recipeIndex > -1) {
         state.recipes.splice(recipeIndex, 1)
       }
 
-      state.recipesLoadingState = 'loaded'
+      state.recipesLoadingState = isItemCrafted ? 'crafted' : 'loaded'
       state.recipesError = null
     },
     moveRecipeToBagSuccess(state, { payload }: PayloadAction<MoveRecipeToBagPayload>) {
@@ -232,7 +245,7 @@ export const {
 } = gameSlice.actions
 
 // Items request actions
-export const fetchItemsRequest = (): AppThunk => async (dispatch) => {
+export const fetchItemsRequest = (isItemCrafted = false): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading('fetching'))
 
@@ -242,7 +255,7 @@ export const fetchItemsRequest = (): AppThunk => async (dispatch) => {
       throw new Error('Items data not received')
     }
 
-    dispatch(fetchItemsSuccess(items))
+    dispatch(fetchItemsSuccess({ items, isItemCrafted }))
   } catch (error) {
     dispatch(fetchItemsError(error.message))
   }
@@ -294,10 +307,14 @@ export const deleteItemRequest = (
 export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading('bagLoading'))
-    const { baggageDate, belongsTo } = await itemsService.editItem(itemId, {
-      belongsTo: DUMMY_USER_ID,
-    } as Partial<Item>)
-    dispatch(moveItemToBagSuccess({ itemId, baggageDate, belongsTo }))
+    const { baggageDate, belongsTo, _id, parentRecipe } = await itemsService.bag(itemId)
+
+    if (_id !== itemId && parentRecipe) {
+      dispatch(deleteRecipeSuccess({ recipeId: parentRecipe, isItemCrafted: true }))
+      dispatch(fetchItemsRequest(true))
+    } else {
+      dispatch(moveItemToBagSuccess({ itemId, baggageDate, belongsTo }))
+    }
   } catch {
     dispatch(moveItemToBagError("Couldn't move item to bag"))
   }
@@ -306,7 +323,7 @@ export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (di
 export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading('bagLoading'))
-    await itemsService.editItem(itemId, { belongsTo: null } as Partial<Item>)
+    await itemsService.unbag(itemId)
     dispatch(extractItemFromBagSuccess(itemId))
   } catch {
     dispatch(extractItemFromBagError("Couldn't extract item from bag"))
@@ -366,7 +383,7 @@ export const deleteRecipeRequest = (
   try {
     dispatch(startRecipesLoading('modalLoading'))
     await recipesService.deleteRecipe(recipeId)
-    dispatch(deleteRecipeSuccess(recipeId))
+    dispatch(deleteRecipeSuccess({ recipeId, isItemCrafted: false }))
     successCallback()
   } catch {
     dispatch(deleteRecipeError("Couldn't delete recipe"))
@@ -376,12 +393,14 @@ export const deleteRecipeRequest = (
 export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading('bagLoading'))
+    const { baggageDate, belongsTo, isParent } = await recipesService.bag(recipeId)
 
-    const { baggageDate, belongsTo } = await recipesService.editRecipe(recipeId, {
-      belongsTo: DUMMY_USER_ID,
-    } as Partial<Recipe>)
-
-    dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate, belongsTo }))
+    if (isParent) {
+      dispatch(deleteRecipeSuccess({ recipeId, isItemCrafted: true }))
+      dispatch(fetchItemsRequest(true))
+    } else {
+      dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate, belongsTo }))
+    }
   } catch {
     dispatch(moveRecipeToBagError("Couldn't move recipe to bag"))
   }
@@ -392,7 +411,7 @@ export const extractRecipeFromBagRequest = (recipeId: Recipe['_id']): AppThunk =
 ) => {
   try {
     dispatch(startRecipesLoading('bagLoading'))
-    await recipesService.editRecipe(recipeId, { belongsTo: null } as Partial<Recipe>)
+    await recipesService.unbag(recipeId)
     dispatch(extractRecipeFromBagSuccess(recipeId))
   } catch {
     dispatch(extractRecipeFromBagError("Couldn't extract recipe from bag"))

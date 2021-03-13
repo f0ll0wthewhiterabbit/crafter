@@ -18,6 +18,8 @@ const theme: DefaultTheme = {
       footer: '#001529',
       unit: '#fff',
       loader: '#fff',
+      badgeItem: '#e91cec',
+      badgeRecipe: '#ff4d4f',
     },
     border: {
       board: '#d4dfe9',

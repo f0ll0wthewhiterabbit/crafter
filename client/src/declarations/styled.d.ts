@@ -16,6 +16,8 @@ declare module 'styled-components' {
         footer: string
         unit: string
         loader: string
+        badgeItem: string
+        badgeRecipe: string
       }
       border: {
         board: string

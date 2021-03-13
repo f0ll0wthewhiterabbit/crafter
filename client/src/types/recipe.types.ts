@@ -1,12 +1,11 @@
-import { Item } from '@/types/item.types'
-
 export interface Recipe {
   _id: string
   title: string
   imageSrc: string
-  items: Item['title'][]
+  itemTitles: string[]
   belongsTo: string | null
   baggageDate: number | null
+  isParent: boolean
 }
 
-export type RecipeForm = Pick<Recipe, 'title' | 'imageSrc' | 'items'>
+export type RecipeForm = Pick<Recipe, 'title' | 'imageSrc' | 'itemTitles'>
