@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { UNIT_TYPES } from '@/constants/unit.constants'
@@ -11,6 +11,17 @@ import { TypedUnit } from '@/types/unit.types'
 const Bag: FC = () => {
   const { items } = useSelector((state: RootState) => state.game)
   const { recipes } = useSelector((state: RootState) => state.game)
+  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
+  const [isAnimated, setIsAnimated] = useState(false)
+
+  useEffect(() => {
+    if (itemsLoadingState === 'crafted') {
+      setIsAnimated(true)
+      setTimeout(() => {
+        setIsAnimated(false)
+      }, 5000)
+    }
+  }, [itemsLoadingState])
 
   const bagUnits = [
     ...items
@@ -36,7 +47,7 @@ const Bag: FC = () => {
   })
 
   return (
-    <Board title="Bag" isLoaderVisible={false}>
+    <Board title="Bag" isLoaderVisible={false} isAnimated={isAnimated}>
       {sortedBagUnits.map((unit) => (
         <Unit unit={unit} unitType={unit.type} key={unit._id} />
       ))}
