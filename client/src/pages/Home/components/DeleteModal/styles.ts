@@ -11,6 +11,8 @@ export const Modal = styled(AntdModal)`
 export const ContentWrapper = styled.div`
   display: flex;
   margin-bottom: 24px;
+  overflow: hidden;
+  word-break: break-word;
 `
 
 export const IconWrapper = styled.div`
