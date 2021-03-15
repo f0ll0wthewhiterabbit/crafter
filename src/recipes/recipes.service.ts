@@ -5,8 +5,9 @@ import { Model, Types, UpdateQuery } from 'mongoose'
 import { Item, ItemDocument } from 'src/items/schemas/item.schema'
 
 import { Recipe, RecipeDocument } from './schemas/recipe.schema'
-import { CreateRecipeDto, MIN_NUMBER_OF_ITEMS_IN_RECIPE } from './dto/create-recipe.dto'
+import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
+import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from './constants'
 
 export const DUMMY_USER_ID = '333b8775230f77072cb77333' // FIXME: this is a temporary solution
 

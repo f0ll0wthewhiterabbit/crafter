@@ -1,0 +1,1 @@
+export const MIN_NUMBER_OF_ITEMS_IN_RECIPE = 2

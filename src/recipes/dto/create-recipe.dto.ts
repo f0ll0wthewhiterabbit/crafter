@@ -1,6 +1,6 @@
 import { ArrayMinSize, ArrayUnique, IsArray, IsString, IsUrl } from 'class-validator'
 
-export const MIN_NUMBER_OF_ITEMS_IN_RECIPE = 2
+import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from '../constants'
 
 export class CreateRecipeDto {
   @IsString()

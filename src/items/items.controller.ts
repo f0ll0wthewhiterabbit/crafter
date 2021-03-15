@@ -8,13 +8,17 @@ import {
   Delete,
   ParseBoolPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 import { Types } from 'mongoose'
+
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 
 import { ItemsService } from './items.service'
 import { CreateItemDto } from './dto/create-item.dto'
 import { UpdateItemDto } from './dto/update-item.dto'
 
+@UseGuards(JwtAuthGuard)
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}

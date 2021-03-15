@@ -8,13 +8,17 @@ import {
   Query,
   Delete,
   ParseBoolPipe,
+  UseGuards,
 } from '@nestjs/common'
 import { Types } from 'mongoose'
+
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 
 import { RecipesService } from './recipes.service'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
 
+@UseGuards(JwtAuthGuard)
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}

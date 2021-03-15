@@ -2,7 +2,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types, UpdateQuery } from 'mongoose'
 
-import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from 'src/recipes/dto/create-recipe.dto'
+import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from 'src/recipes/constants'
 import { DUMMY_USER_ID } from 'src/recipes/recipes.service'
 import { Recipe, RecipeDocument } from 'src/recipes/schemas/recipe.schema'
 
