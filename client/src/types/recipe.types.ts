@@ -1,4 +1,6 @@
-export interface Recipe {
+import { MongoDBResponse } from '@/types/response.types'
+
+export interface Recipe extends MongoDBResponse {
   _id: string
   title: string
   imageSrc: string
@@ -8,4 +10,8 @@ export interface Recipe {
   isParent: boolean
 }
 
-export type RecipeForm = Pick<Recipe, 'title' | 'imageSrc' | 'itemTitles'>
+export interface RecipeForm {
+  title: string
+  imageSrc: string
+  itemTitles: string[]
+}

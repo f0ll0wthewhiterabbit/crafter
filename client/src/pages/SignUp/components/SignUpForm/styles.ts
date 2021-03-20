@@ -38,13 +38,18 @@ export const FormItemRequired = styled(FormItem)`
 export const Button = styled(AntdButton)`
   width: 100%;
   margin-bottom: 2px;
+
+  :disabled {
+    color: ${({ theme }) => theme.colors.disabledButton};
+  }
 `
 
 export const ErrorMessage = styled.p<{ isVisible: boolean }>`
   position: absolute;
-  bottom: -28px;
+  bottom: -77px;
   left: 0;
   color: ${({ theme }) => theme.colors.font.error};
   margin-bottom: 0;
   display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+  min-height: 72px;
 `

@@ -9,10 +9,12 @@ import {
   ParseBoolPipe,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common'
 import { Types } from 'mongoose'
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { RequestWithUser } from 'src/auth/types'
 
 import { ItemsService } from './items.service'
 import { CreateItemDto } from './dto/create-item.dto'
@@ -49,8 +51,9 @@ export class ItemsController {
   }
 
   @Get('bag/:id')
-  bag(@Param('id') id: Types.ObjectId) {
-    return this.itemsService.bag(id)
+  bag(@Param('id') id: Types.ObjectId, @Req() request: RequestWithUser) {
+    const { userId } = request.user
+    return this.itemsService.bag(id, userId)
   }
 
   @Get('unbag/:id')

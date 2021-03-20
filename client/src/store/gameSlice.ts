@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { AxiosError } from 'axios'
 
 import { Item, ItemForm } from '@/types/item.types'
 import { Recipe, RecipeForm } from '@/types/recipe.types'
 import { AppThunk } from '@/store/store'
 import { itemsService } from '@/services/items.api'
 import { recipesService } from '@/services/recipes.api'
+import { signOutRequest } from '@/store/authSlice'
 
-type LoadingState =
+type GameLoadingState =
   | 'fetching'
   | 'loading'
   | 'modalLoading'
@@ -18,10 +20,10 @@ type LoadingState =
 
 interface GameState {
   items: Item[]
-  itemsLoadingState: LoadingState
+  itemsLoadingState: GameLoadingState
   itemsError: string | null
   recipes: Recipe[]
-  recipesLoadingState: LoadingState
+  recipesLoadingState: GameLoadingState
   recipesError: string | null
 }
 
@@ -56,24 +58,11 @@ const initialState: GameState = {
   recipesError: null,
 }
 
-const itemsLoadingFailed = (state: GameState, { payload: itemsError }: PayloadAction<string>) => {
-  state.itemsError = itemsError
-  state.itemsLoadingState = 'error'
-}
-
-const recipesLoadingFailed = (
-  state: GameState,
-  { payload: recipesError }: PayloadAction<string>
-) => {
-  state.recipesError = recipesError
-  state.recipesLoadingState = 'error'
-}
-
 const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    startItemsLoading(state, { payload: loadingState }: PayloadAction<LoadingState>) {
+    startItemsLoading(state, { payload: loadingState }: PayloadAction<GameLoadingState>) {
       state.itemsLoadingState = loadingState
     },
     fetchItemsSuccess(state, { payload }: PayloadAction<FetchItemsPayload>) {
@@ -132,17 +121,15 @@ const gameSlice = createSlice({
       state.itemsLoadingState = 'loaded'
       state.itemsError = null
     },
-    fetchItemsError: itemsLoadingFailed,
-    addItemError: itemsLoadingFailed,
-    editItemError: itemsLoadingFailed,
-    deleteItemError: itemsLoadingFailed,
-    moveItemToBagError: itemsLoadingFailed,
-    extractItemFromBagError: itemsLoadingFailed,
+    setItemsError(state: GameState, { payload: itemsError }: PayloadAction<string>) {
+      state.itemsError = itemsError
+      state.itemsLoadingState = 'error'
+    },
     resetItemsError(state) {
       state.itemsLoadingState = null
       state.itemsError = null
     },
-    startRecipesLoading(state, { payload: loadingState }: PayloadAction<LoadingState>) {
+    startRecipesLoading(state, { payload: loadingState }: PayloadAction<GameLoadingState>) {
       state.recipesLoadingState = loadingState
     },
     fetchRecipesSuccess(state, { payload: recipes }: PayloadAction<Recipe[]>) {
@@ -200,12 +187,10 @@ const gameSlice = createSlice({
       state.recipesLoadingState = 'loaded'
       state.recipesError = null
     },
-    fetchRecipesError: recipesLoadingFailed,
-    addRecipeError: recipesLoadingFailed,
-    editRecipeError: recipesLoadingFailed,
-    deleteRecipeError: recipesLoadingFailed,
-    moveRecipeToBagError: recipesLoadingFailed,
-    extractRecipeFromBagError: recipesLoadingFailed,
+    setRecipesError(state: GameState, { payload: recipesError }: PayloadAction<string>) {
+      state.recipesError = recipesError
+      state.recipesLoadingState = 'error'
+    },
     resetRecipesError(state) {
       state.recipesLoadingState = null
       state.recipesError = null
@@ -216,31 +201,21 @@ const gameSlice = createSlice({
 export const {
   startItemsLoading,
   fetchItemsSuccess,
-  fetchItemsError,
   addItemSuccess,
-  addItemError,
   editItemSuccess,
-  editItemError,
   deleteItemSuccess,
-  deleteItemError,
   moveItemToBagSuccess,
-  moveItemToBagError,
   extractItemFromBagSuccess,
-  extractItemFromBagError,
+  setItemsError,
   resetItemsError,
   startRecipesLoading,
   fetchRecipesSuccess,
-  fetchRecipesError,
   addRecipeSuccess,
-  addRecipeError,
   editRecipeSuccess,
-  editRecipeError,
   deleteRecipeSuccess,
-  deleteRecipeError,
   moveRecipeToBagSuccess,
-  moveRecipeToBagError,
   extractRecipeFromBagSuccess,
-  extractRecipeFromBagError,
+  setRecipesError,
   resetRecipesError,
 } = gameSlice.actions
 
@@ -248,16 +223,10 @@ export const {
 export const fetchItemsRequest = (isItemCrafted = false): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading('fetching'))
-
     const items = await itemsService.getItems()
-
-    if (!items) {
-      throw new Error('Items data not received')
-    }
-
     dispatch(fetchItemsSuccess({ items, isItemCrafted }))
   } catch (error) {
-    dispatch(fetchItemsError(error.message))
+    dispatch(handleItemsErrorRequest(error, 'Items data not received'))
   }
 }
 
@@ -270,8 +239,8 @@ export const addItemRequest = (
     const item = await itemsService.addItem(itemFormValues)
     dispatch(addItemSuccess(item))
     successCallback()
-  } catch {
-    dispatch(addItemError("Couldn't create item"))
+  } catch (error) {
+    dispatch(handleItemsErrorRequest(error, "Couldn't create item"))
   }
 }
 
@@ -285,8 +254,8 @@ export const editItemRequest = (
     const item = await itemsService.editItem(itemId, itemFormValues)
     dispatch(editItemSuccess(item))
     successCallback()
-  } catch {
-    dispatch(editItemError("Couldn't update item"))
+  } catch (error) {
+    dispatch(handleItemsErrorRequest(error, "Couldn't update item"))
   }
 }
 
@@ -299,8 +268,8 @@ export const deleteItemRequest = (
     await itemsService.deleteItem(itemId)
     dispatch(deleteItemSuccess(itemId))
     successCallback()
-  } catch {
-    dispatch(deleteItemError("Couldn't delete item"))
+  } catch (error) {
+    dispatch(handleItemsErrorRequest(error, "Couldn't delete item"))
   }
 }
 
@@ -315,8 +284,8 @@ export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (di
     } else {
       dispatch(moveItemToBagSuccess({ itemId, baggageDate, belongsTo }))
     }
-  } catch {
-    dispatch(moveItemToBagError("Couldn't move item to bag"))
+  } catch (error) {
+    dispatch(handleItemsErrorRequest(error, "Couldn't move item to bag"))
   }
 }
 
@@ -325,8 +294,19 @@ export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => asyn
     dispatch(startItemsLoading('bagLoading'))
     await itemsService.unbag(itemId)
     dispatch(extractItemFromBagSuccess(itemId))
-  } catch {
-    dispatch(extractItemFromBagError("Couldn't extract item from bag"))
+  } catch (error) {
+    dispatch(handleItemsErrorRequest(error, "Couldn't extract item from bag"))
+  }
+}
+
+export const handleItemsErrorRequest = (error: AxiosError, errorMessage: string): AppThunk => (
+  dispatch
+) => {
+  if (error.response?.data.statusCode === 401) {
+    dispatch(setItemsError('Token expired'))
+    dispatch(signOutRequest())
+  } else {
+    dispatch(setItemsError(errorMessage))
   }
 }
 
@@ -334,16 +314,10 @@ export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => asyn
 export const fetchRecipesRequest = (): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading('fetching'))
-
     const recipes = await recipesService.getRecipes()
-
-    if (!recipes) {
-      throw new Error('Recipes data not received')
-    }
-
     dispatch(fetchRecipesSuccess(recipes))
   } catch (error) {
-    dispatch(fetchRecipesError(error.message))
+    dispatch(handleRecipesErrorRequest(error, 'Recipes data not received'))
   }
 }
 
@@ -356,8 +330,8 @@ export const addRecipeRequest = (
     const recipe = await recipesService.addRecipe(recipeFormValues)
     dispatch(addRecipeSuccess(recipe))
     successCallback()
-  } catch {
-    dispatch(addRecipeError("Couldn't create recipe"))
+  } catch (error) {
+    dispatch(handleRecipesErrorRequest(error, "Couldn't create recipe"))
   }
 }
 
@@ -371,8 +345,8 @@ export const editRecipeRequest = (
     const recipe = await recipesService.editRecipe(recipeId, recipeFormValues)
     dispatch(editRecipeSuccess(recipe))
     successCallback()
-  } catch {
-    dispatch(editRecipeError("Couldn't update recipe"))
+  } catch (error) {
+    dispatch(handleRecipesErrorRequest(error, "Couldn't update recipe"))
   }
 }
 
@@ -385,8 +359,8 @@ export const deleteRecipeRequest = (
     await recipesService.deleteRecipe(recipeId)
     dispatch(deleteRecipeSuccess({ recipeId, isItemCrafted: false }))
     successCallback()
-  } catch {
-    dispatch(deleteRecipeError("Couldn't delete recipe"))
+  } catch (error) {
+    dispatch(handleRecipesErrorRequest(error, "Couldn't delete recipe"))
   }
 }
 
@@ -401,8 +375,8 @@ export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => asy
     } else {
       dispatch(moveRecipeToBagSuccess({ recipeId, baggageDate, belongsTo }))
     }
-  } catch {
-    dispatch(moveRecipeToBagError("Couldn't move recipe to bag"))
+  } catch (error) {
+    dispatch(handleRecipesErrorRequest(error, "Couldn't move recipe to bag"))
   }
 }
 
@@ -413,8 +387,19 @@ export const extractRecipeFromBagRequest = (recipeId: Recipe['_id']): AppThunk =
     dispatch(startRecipesLoading('bagLoading'))
     await recipesService.unbag(recipeId)
     dispatch(extractRecipeFromBagSuccess(recipeId))
-  } catch {
-    dispatch(extractRecipeFromBagError("Couldn't extract recipe from bag"))
+  } catch (error) {
+    dispatch(handleRecipesErrorRequest(error, "Couldn't extract recipe from bag"))
+  }
+}
+
+export const handleRecipesErrorRequest = (error: AxiosError, errorMessage: string): AppThunk => (
+  dispatch
+) => {
+  if (error.response?.data.statusCode === 401) {
+    dispatch(setRecipesError('Token expired'))
+    dispatch(signOutRequest())
+  } else {
+    dispatch(setRecipesError(errorMessage))
   }
 }
 

@@ -4,7 +4,6 @@ import { SelectValue } from 'antd/lib/select'
 import { useField } from 'formik'
 
 import { RootState } from '@/store/rootReducer'
-import { DUMMY_USER_ID } from '@/constants/user.constants'
 
 import { Select } from './styles'
 
@@ -14,9 +13,10 @@ const ItemSelect: FC<{ fieldName: string; initialValue: string[] }> = ({
   fieldName,
   initialValue,
 }) => {
+  const { user } = useSelector((state: RootState) => state.auth)
   const itemTitles = useSelector((state: RootState) => {
     const filteredItems = state.game.items.filter(
-      (item) => (!item.belongsTo || item.belongsTo === DUMMY_USER_ID) && !item.parentRecipe
+      (item) => (!item.belongsTo || item.belongsTo === user?._id) && !item.parentRecipe
     )
 
     return [...new Set(filteredItems.map((item) => item.title))]

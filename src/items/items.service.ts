@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types, UpdateQuery } from 'mongoose'
 
 import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from 'src/recipes/constants'
-import { DUMMY_USER_ID } from 'src/recipes/recipes.service'
 import { Recipe, RecipeDocument } from 'src/recipes/schemas/recipe.schema'
 
 import { CreateItemDto } from './dto/create-item.dto'
@@ -37,10 +36,7 @@ export class ItemsService {
     const updatedFields = updateItemDto as any
 
     return await this.itemModel
-      .findByIdAndUpdate(id, updatedFields as UpdateQuery<ItemDocument>, {
-        new: true,
-        useFindAndModify: false,
-      })
+      .findByIdAndUpdate(id, updatedFields as UpdateQuery<ItemDocument>, { new: true })
       .exec()
   }
 
@@ -70,26 +66,20 @@ export class ItemsService {
     return { removedItems, removedRecipes }
   }
 
-  async bag(id: Types.ObjectId): Promise<Item> {
-    // TODO: fix DUMMY_USER_ID using real userId
+  async bag(id: Types.ObjectId, userId: string): Promise<Item> {
     const updatedFields = {
-      belongsTo: DUMMY_USER_ID,
+      belongsTo: userId,
       baggageDate: new Date().toISOString(),
     } as any
     const baggedItem = await this.itemModel
-      .findByIdAndUpdate(id, updatedFields, {
-        new: true,
-        useFindAndModify: false,
-      })
+      .findByIdAndUpdate(id, updatedFields, { new: true })
       .exec()
-    const baggedRecipes = await this.recipeModel
-      .find({ belongsTo: DUMMY_USER_ID, isParent: false })
-      .exec()
+    const baggedRecipes = await this.recipeModel.find({ belongsTo: userId, isParent: false }).exec()
     let craftedItem
 
     if (baggedRecipes.length) {
       const baggedItems = await this.itemModel
-        .find({ belongsTo: DUMMY_USER_ID, parentRecipe: { $exists: false }, isParent: false })
+        .find({ belongsTo: userId, parentRecipe: { $exists: false }, isParent: false })
         .exec()
 
       if (baggedItems.length >= MIN_NUMBER_OF_ITEMS_IN_RECIPE) {
@@ -113,7 +103,7 @@ export class ItemsService {
                 imageSrc: baggedRecipe.imageSrc,
                 parentRecipe: baggedRecipe._id,
                 parentItems: includedItemsIdList,
-                belongsTo: DUMMY_USER_ID,
+                belongsTo: userId,
                 craftDate: new Date().toISOString(),
                 baggageDate: new Date().toISOString(),
               })
@@ -122,18 +112,12 @@ export class ItemsService {
               await this.recipeModel.findByIdAndUpdate(
                 baggedRecipe._id,
                 { isParent: true } as any,
-                {
-                  new: true,
-                  useFindAndModify: false,
-                }
+                { new: true }
               )
               await this.itemModel.updateMany(
                 { _id: { $in: includedItemsIdList } },
                 { isParent: true },
-                {
-                  new: true,
-                  useFindAndModify: false,
-                }
+                { new: true }
               )
             }
           }
@@ -153,7 +137,6 @@ export class ItemsService {
     return await this.itemModel
       .findByIdAndUpdate(id, updatedFields, {
         new: true,
-        useFindAndModify: false,
       })
       .exec()
   }

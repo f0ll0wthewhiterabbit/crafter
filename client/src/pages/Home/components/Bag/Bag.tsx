@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 
 import { UNIT_TYPES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
-import { DUMMY_USER_ID } from '@/constants/user.constants'
 import Board from '@/pages/Home/components/Board'
 import Unit from '@/pages/Home/components/Unit'
 import { TypedUnit } from '@/types/unit.types'
@@ -12,6 +11,7 @@ const Bag: FC = () => {
   const { items } = useSelector((state: RootState) => state.game)
   const { recipes } = useSelector((state: RootState) => state.game)
   const { itemsLoadingState } = useSelector((state: RootState) => state.game)
+  const { user } = useSelector((state: RootState) => state.auth)
   const [isAnimated, setIsAnimated] = useState(false)
 
   useEffect(() => {
@@ -25,10 +25,10 @@ const Bag: FC = () => {
 
   const bagUnits = [
     ...items
-      .filter((item) => item.belongsTo === DUMMY_USER_ID)
+      .filter((item) => item.belongsTo === user?._id)
       .map((item) => ({ ...item, type: UNIT_TYPES.ITEM })),
     ...recipes
-      .filter((recipe) => recipe.belongsTo === DUMMY_USER_ID)
+      .filter((recipe) => recipe.belongsTo === user?._id)
       .map((recipe) => ({ ...recipe, type: UNIT_TYPES.RECIPE })),
   ] as TypedUnit[]
 

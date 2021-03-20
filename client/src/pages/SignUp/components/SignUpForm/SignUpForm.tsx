@@ -1,16 +1,25 @@
 import React, { FC } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Input } from 'antd'
 import { Link } from 'react-router-dom'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import { ROUTE_NAMES } from '@/router/routes.constants'
-import { SignUpForm as ISignUpForm } from '@/types/authentication.types'
+import { UserForm } from '@/types/user.types'
+import { signUpRequest } from '@/store/authSlice'
+import { RootState } from '@/store/rootReducer'
+
 import { Form, Button, FormItem, FormItemRequired, ErrorMessage } from './styles'
 
 const SignUpForm: FC = () => {
-  const handleFormSubmit = (values: ISignUpForm) => {
-    console.log(values)
+  const { loadingState } = useSelector((state: RootState) => state.auth)
+  const { error } = useSelector((state: RootState) => state.auth)
+  const isLoading = loadingState === 'loading'
+  const dispatch = useDispatch()
+
+  const handleFormSubmit = (values: UserForm) => {
+    dispatch(signUpRequest(values))
   }
 
   return (
@@ -72,8 +81,8 @@ const SignUpForm: FC = () => {
             />
           </FormItemRequired>
           <FormItem>
-            <Button type="primary" htmlType="submit">
-              Sign up
+            <Button type="primary" htmlType="submit" loading={isLoading} disabled={isLoading}>
+              {isLoading ? '' : 'Sign up'}
             </Button>
             <span>
               Already have an account? <Link to={ROUTE_NAMES.SIGN_IN}>Sign in</Link>
@@ -83,10 +92,11 @@ const SignUpForm: FC = () => {
             isVisible={Boolean(
               (errors.email && touched.email) ||
                 (errors.password && touched.password) ||
-                (errors.passwordConfirm && touched.passwordConfirm)
+                (errors.passwordConfirm && touched.passwordConfirm) ||
+                error
             )}
           >
-            {errors.email || errors.password || errors.passwordConfirm || ''}
+            {errors.email || errors.password || errors.passwordConfirm || error || ''}
           </ErrorMessage>
         </Form>
       )}

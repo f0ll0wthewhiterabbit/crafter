@@ -1,21 +1,21 @@
 import { Item } from '@/types/item.types'
 import { Recipe } from '@/types/recipe.types'
 
-export interface Request {
+export interface MongoDBResponse {
   createdAt: string
   updatedAt: string
   __v: number
 }
 
-export interface ItemRequest extends Item, Request {}
-
-export interface RecipeRequest extends Recipe, Request {}
-
-export interface ItemDeleteRequest {
+export interface ItemDeleteResponse {
   removedItems: Item['_id'][]
   removedRecipes: Recipe['_id'][]
 }
 
-export interface RecipeDeleteRequest {
+export interface RecipeDeleteResponse {
   removedRecipes: Recipe['_id'][]
+}
+
+export interface SignInResponse {
+  accessToken: string
 }

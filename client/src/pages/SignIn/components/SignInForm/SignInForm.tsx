@@ -1,25 +1,25 @@
 import React, { FC } from 'react'
-import { Checkbox } from 'antd'
+import { useDispatch, useSelector } from 'react-redux'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 
 import { ROUTE_NAMES } from '@/router/routes.constants'
-import { SignInForm as ISignInForm } from '@/types/authentication.types'
-import {
-  Form,
-  FormItem,
-  CheckboxFormItem,
-  Input,
-  PasswordInput,
-  Button,
-  ErrorMessage,
-} from './styles'
+import { RootState } from '@/store/rootReducer'
+import { UserForm } from '@/types/user.types'
+import { signInRequest } from '@/store/authSlice'
+
+import { Form, FormItem, Input, PasswordInput, Button, ErrorMessage } from './styles'
 
 const SignInForm: FC = () => {
-  const handleFormSubmit = (values: ISignInForm) => {
-    console.log(values)
+  const { loadingState } = useSelector((state: RootState) => state.auth)
+  const { error } = useSelector((state: RootState) => state.auth)
+  const isLoading = loadingState === 'loading'
+  const dispatch = useDispatch()
+
+  const handleFormSubmit = (values: UserForm) => {
+    dispatch(signInRequest(false, values))
   }
 
   return (
@@ -28,7 +28,6 @@ const SignInForm: FC = () => {
       validationSchema={Yup.object({
         email: Yup.string().email('Invalid email address').required('Email is required'),
         password: Yup.string().required('Password is required'),
-        remember: Yup.boolean(),
       })}
       onSubmit={handleFormSubmit}
     >
@@ -60,17 +59,9 @@ const SignInForm: FC = () => {
               value={values.password}
             />
           </FormItem>
-          <CheckboxFormItem name="remember" valuePropName="rememberMe">
-            <Checkbox
-              defaultChecked={values.remember}
-              onChange={() => setFieldValue('remember', !values.remember)}
-            >
-              Remember me
-            </Checkbox>
-          </CheckboxFormItem>
           <FormItem>
-            <Button type="primary" htmlType="submit">
-              Sign in
+            <Button type="primary" htmlType="submit" loading={isLoading} disabled={isLoading}>
+              {isLoading ? '' : 'Sign in'}
             </Button>
             <span>
               Or <Link to={ROUTE_NAMES.SIGN_UP}>register now!</Link>
@@ -78,10 +69,10 @@ const SignInForm: FC = () => {
           </FormItem>
           <ErrorMessage
             isVisible={Boolean(
-              (errors.email && touched.email) || (errors.password && touched.password)
+              (errors.email && touched.email) || (errors.password && touched.password) || error
             )}
           >
-            {errors.email || errors.password || ''}
+            {errors.email || errors.password || error || ''}
           </ErrorMessage>
         </Form>
       )}

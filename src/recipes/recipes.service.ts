@@ -9,8 +9,6 @@ import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
 import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from './constants'
 
-export const DUMMY_USER_ID = '333b8775230f77072cb77333' // FIXME: this is a temporary solution
-
 @Injectable()
 export class RecipesService {
   constructor(
@@ -38,10 +36,7 @@ export class RecipesService {
     const updatedFields = updateRecipeDto as any
 
     return await this.recipeModel
-      .findByIdAndUpdate(id, updatedFields as UpdateQuery<RecipeDocument>, {
-        new: true,
-        useFindAndModify: false,
-      })
+      .findByIdAndUpdate(id, updatedFields as UpdateQuery<RecipeDocument>, { new: true })
       .exec()
   }
 
@@ -55,16 +50,15 @@ export class RecipesService {
     return { removedRecipes: [removedRecipe.id] }
   }
 
-  async bag(id: Types.ObjectId): Promise<Recipe> {
-    // TODO: fix DUMMY_USER_ID using real userId
+  async bag(id: Types.ObjectId, userId: string): Promise<Recipe> {
     const updatedFields = {
-      belongsTo: DUMMY_USER_ID,
+      belongsTo: userId,
       baggageDate: new Date().toISOString(),
     } as any
 
     const baggedItems = await this.itemModel
       .find({
-        belongsTo: DUMMY_USER_ID,
+        belongsTo: userId,
         parentRecipe: { $exists: false },
         isParent: false,
       })
@@ -89,7 +83,7 @@ export class RecipesService {
           imageSrc: recipe.imageSrc,
           parentRecipe: recipe._id,
           parentItems: includedItemsIdList,
-          belongsTo: DUMMY_USER_ID,
+          belongsTo: userId,
           craftDate: new Date().toISOString(),
           baggageDate: new Date().toISOString(),
         })
@@ -98,21 +92,13 @@ export class RecipesService {
         await this.itemModel.updateMany(
           { _id: { $in: includedItemsIdList } },
           { isParent: true },
-          {
-            new: true,
-            useFindAndModify: false,
-          }
+          { new: true }
         )
         updatedFields.isParent = true
       }
     }
 
-    return await this.recipeModel
-      .findByIdAndUpdate(id, updatedFields, {
-        new: true,
-        useFindAndModify: false,
-      })
-      .exec()
+    return await this.recipeModel.findByIdAndUpdate(id, updatedFields, { new: true }).exec()
   }
 
   async unbag(id: Types.ObjectId): Promise<Recipe> {
@@ -121,11 +107,6 @@ export class RecipesService {
       baggageDate: null,
     } as UpdateQuery<RecipeDocument>
 
-    return await this.recipeModel
-      .findByIdAndUpdate(id, updatedFields, {
-        new: true,
-        useFindAndModify: false,
-      })
-      .exec()
+    return await this.recipeModel.findByIdAndUpdate(id, updatedFields, { new: true }).exec()
   }
 }

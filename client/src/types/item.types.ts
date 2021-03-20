@@ -1,4 +1,6 @@
-export interface Item {
+import { MongoDBResponse } from '@/types/response.types'
+
+export interface Item extends MongoDBResponse {
   _id: string
   title: string
   imageSrc: string
@@ -10,4 +12,7 @@ export interface Item {
   parentItems?: string[]
 }
 
-export type ItemForm = Pick<Item, 'title' | 'imageSrc'>
+export interface ItemForm {
+  title: string
+  imageSrc: string
+}

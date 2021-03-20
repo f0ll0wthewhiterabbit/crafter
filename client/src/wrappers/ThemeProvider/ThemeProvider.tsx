@@ -25,6 +25,7 @@ const theme: DefaultTheme = {
       board: '#d4dfe9',
       modal: '#f0f0f0',
     },
+    disabledButton: 'rgba(0, 0, 0, 0.7)',
     accent: '#1890ff',
   },
 }

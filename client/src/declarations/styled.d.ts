@@ -23,6 +23,7 @@ declare module 'styled-components' {
         board: string
         modal: string
       }
+      disabledButton: string
       accent: string
     }
   }

@@ -1,3 +1,12 @@
+import { Request } from 'express'
+
 export interface LoginResponse {
-  access_token: string
+  accessToken: string
+}
+
+export interface RequestWithUser extends Request {
+  user: {
+    userId: string
+    email: string
+  }
 }

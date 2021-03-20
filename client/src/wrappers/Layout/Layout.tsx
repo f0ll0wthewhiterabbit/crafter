@@ -17,6 +17,7 @@ const Layout: FC = ({ children }) => {
   const { recipesLoadingState } = useSelector((state: RootState) => state.game)
   const { itemsError } = useSelector((state: RootState) => state.game)
   const { recipesError } = useSelector((state: RootState) => state.game)
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const Layout: FC = ({ children }) => {
     <Wrapper>
       <Header>
         <Logo />
-        <UserMenu />
+        {isAuthenticated && <UserMenu />}
       </Header>
       <Content>
         <Loader

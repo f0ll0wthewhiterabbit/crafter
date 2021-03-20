@@ -1,1 +1,0 @@
-export const DUMMY_USER_ID = '333b8775230f77072cb77333'

@@ -9,10 +9,12 @@ import {
   Delete,
   ParseBoolPipe,
   UseGuards,
+  Req,
 } from '@nestjs/common'
 import { Types } from 'mongoose'
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { RequestWithUser } from 'src/auth/types'
 
 import { RecipesService } from './recipes.service'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
@@ -49,8 +51,9 @@ export class RecipesController {
   }
 
   @Get('bag/:id')
-  bag(@Param('id') id: Types.ObjectId) {
-    return this.recipesService.bag(id)
+  bag(@Param('id') id: Types.ObjectId, @Req() request: RequestWithUser) {
+    const { userId } = request.user
+    return this.recipesService.bag(id, userId)
   }
 
   @Get('unbag/:id')
