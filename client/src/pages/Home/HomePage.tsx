@@ -2,7 +2,8 @@ import React, { FC, useEffect } from 'react'
 import { Redirect } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { fetchItemsRequest, fetchRecipesRequest } from '@/store/gameSlice'
+import { fetchItemsRequest } from '@/store/itemsSlice'
+import { fetchRecipesRequest } from '@/store/recipesSlice'
 import { RootState } from '@/store/rootReducer'
 import { ROUTE_NAMES } from '@/router/routes.constants'
 

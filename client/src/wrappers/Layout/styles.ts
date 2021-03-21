@@ -25,9 +25,12 @@ export const Content = styled(AntdContent)`
   justify-content: center;
   align-items: center;
   position: relative;
-  max-width: 1920px;
-  margin-left: auto;
-  margin-right: auto;
+
+  @media (min-width: 1920px) {
+    max-width: 1920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 `
 
 export const Footer = styled(AntdFooter)`

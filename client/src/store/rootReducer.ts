@@ -1,10 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
-import gameReducer from '@/store/gameSlice'
+import itemsReducer from '@/store/itemsSlice'
+import recipesReducer from '@/store/recipesSlice'
 import authReducer from '@/store/authSlice'
 
 const rootReducer = combineReducers({
-  game: gameReducer,
+  items: itemsReducer,
+  recipes: recipesReducer,
   auth: authReducer,
 })
 

@@ -2,7 +2,8 @@ import React, { FC } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Typography, Button } from 'antd'
 
-import { deleteItemRequest, deleteRecipeRequest } from '@/store/gameSlice'
+import { deleteRecipeRequest } from '@/store/recipesSlice'
+import { deleteItemRequest } from '@/store/itemsSlice'
 import { RootState } from '@/store/rootReducer'
 
 import { Modal, ContentWrapper, ExclamationIcon, IconWrapper, Controls } from './styles'
@@ -16,8 +17,8 @@ const DeleteModal: FC<{
   isRecipe: boolean
   handleClose: () => void
 }> = ({ isVisible, id, title, isRecipe, handleClose }) => {
-  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
-  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
+  const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
+  const { loadingState: recipesLoadingState } = useSelector((state: RootState) => state.recipes)
   const dispatch = useDispatch()
 
   const handleConfirm = () => {

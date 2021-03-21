@@ -6,12 +6,8 @@ import { Input, Button, Tooltip } from 'antd'
 
 import { ItemForm } from '@/types/item.types'
 import { Recipe, RecipeForm } from '@/types/recipe.types'
-import {
-  addItemRequest,
-  addRecipeRequest,
-  editItemRequest,
-  editRecipeRequest,
-} from '@/store/gameSlice'
+import { addRecipeRequest, editRecipeRequest } from '@/store/recipesSlice'
+import { addItemRequest, editItemRequest } from '@/store/itemsSlice'
 import { Unit } from '@/types/unit.types'
 import { UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
@@ -34,8 +30,8 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
   unit,
   handleClose,
 }) => {
-  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
-  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
+  const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
+  const { loadingState: recipesLoadingState } = useSelector((state: RootState) => state.recipes)
   const dispatch = useDispatch()
   const id = unit?._id || ''
   const title = unit?.title || ''

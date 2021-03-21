@@ -8,8 +8,8 @@ import AddButton from '@/pages/Home/components/AddButton'
 import Unit from '@/pages/Home/components/Unit'
 
 const Items: FC = () => {
-  const { items } = useSelector((state: RootState) => state.game)
-  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
+  const { data: items } = useSelector((state: RootState) => state.items)
+  const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
 
   return (
     <Board

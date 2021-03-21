@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components'
-import { Button as AntdButton } from 'antd'
+import { Button as AntdButton, Badge as AntdBadge } from 'antd'
 
 export const Wrapper = styled.div<{ isCraftedItem: boolean }>`
   .ant-badge-count {
@@ -8,9 +8,12 @@ export const Wrapper = styled.div<{ isCraftedItem: boolean }>`
   }
 `
 
+export const Badge = styled(AntdBadge)`
+  width: 100%;
+`
+
 export const ImageWrapper = styled.div<{ tabIndex: number }>`
-  /* width: 130px;
-  height: 130px; */
+  width: 100%;
   aspect-ratio: 1 /1;
   overflow: hidden;
   border-radius: 10px;

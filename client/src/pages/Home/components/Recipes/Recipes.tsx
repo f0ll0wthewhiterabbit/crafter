@@ -8,8 +8,8 @@ import Unit from '@/pages/Home/components/Unit'
 import AddButton from '@/pages/Home/components/AddButton'
 
 const Recipes: FC = () => {
-  const { recipes } = useSelector((state: RootState) => state.game)
-  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
+  const { data: recipes } = useSelector((state: RootState) => state.recipes)
+  const { loadingState: recipesLoadingState } = useSelector((state: RootState) => state.recipes)
 
   return (
     <Board

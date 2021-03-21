@@ -8,9 +8,9 @@ import Unit from '@/pages/Home/components/Unit'
 import { TypedUnit } from '@/types/unit.types'
 
 const Bag: FC = () => {
-  const { items } = useSelector((state: RootState) => state.game)
-  const { recipes } = useSelector((state: RootState) => state.game)
-  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
+  const { data: items } = useSelector((state: RootState) => state.items)
+  const { data: recipes } = useSelector((state: RootState) => state.recipes)
+  const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
   const { user } = useSelector((state: RootState) => state.auth)
   const [isAnimated, setIsAnimated] = useState(false)
 

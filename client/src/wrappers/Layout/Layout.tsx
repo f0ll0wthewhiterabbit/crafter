@@ -5,7 +5,8 @@ import { IconType } from 'antd/lib/notification'
 
 import Loader from '@/components/Loader'
 import { RootState } from '@/store/rootReducer'
-import { resetItemsError, resetRecipesError } from '@/store/gameSlice'
+import { resetItemsError } from '@/store/itemsSlice'
+import { resetRecipesError } from '@/store/recipesSlice'
 
 import Copyright from './components/Copyright'
 import Logo from './components/Logo'
@@ -13,10 +14,10 @@ import UserMenu from './components/UserMenu'
 import { Wrapper, Header, Content, Footer } from './styles'
 
 const Layout: FC = ({ children }) => {
-  const { itemsLoadingState } = useSelector((state: RootState) => state.game)
-  const { recipesLoadingState } = useSelector((state: RootState) => state.game)
-  const { itemsError } = useSelector((state: RootState) => state.game)
-  const { recipesError } = useSelector((state: RootState) => state.game)
+  const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
+  const { loadingState: recipesLoadingState } = useSelector((state: RootState) => state.recipes)
+  const { error: itemsError } = useSelector((state: RootState) => state.items)
+  const { error: recipesError } = useSelector((state: RootState) => state.recipes)
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
   const dispatch = useDispatch()
 

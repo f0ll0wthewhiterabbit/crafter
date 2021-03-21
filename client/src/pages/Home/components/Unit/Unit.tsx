@@ -1,6 +1,6 @@
 import React, { FC, KeyboardEvent, SyntheticEvent, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Tooltip, Button, Badge } from 'antd'
+import { Tooltip } from 'antd'
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
@@ -14,14 +14,10 @@ import UnitModal from '@/pages/Home/components/UnitModal'
 import { Unit as UnitType } from '@/types/unit.types'
 import { Item } from '@/types/item.types'
 import { UNIT_TYPES, UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
-import {
-  extractItemFromBagRequest,
-  extractRecipeFromBagRequest,
-  moveItemToBagRequest,
-  moveRecipeToBagRequest,
-} from '@/store/gameSlice'
+import { extractRecipeFromBagRequest, moveRecipeToBagRequest } from '@/store/recipesSlice'
+import { extractItemFromBagRequest, moveItemToBagRequest } from '@/store/itemsSlice'
 
-import { Wrapper, ImageWrapper, Image, Controls, ControlButton } from './styles'
+import { Wrapper, ImageWrapper, Image, Controls, ControlButton, Badge } from './styles'
 
 const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) => {
   const dispatch = useDispatch()
