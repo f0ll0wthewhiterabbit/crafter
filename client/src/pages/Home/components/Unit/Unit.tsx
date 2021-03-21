@@ -21,7 +21,7 @@ import {
   moveRecipeToBagRequest,
 } from '@/store/gameSlice'
 
-import { Wrapper, ImageWrapper, Image, Controls } from './styles'
+import { Wrapper, ImageWrapper, Image, Controls, ControlButton } from './styles'
 
 const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) => {
   const dispatch = useDispatch()
@@ -130,9 +130,17 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
           >
             <Image src={imageSrc} alt={title} isFocused={isFocused} />
             <Controls $isVisible={isFocused}>
-              <Button shape="circle" icon={leftButtonIcon} onClick={handleLeftButtonClick} />
-              <Button shape="circle" icon={<EditOutlined />} onClick={handleMiddleButtonClick} />
-              <Button shape="circle" icon={rightButtonIcon} onClick={handleRightButtonClick} />
+              <ControlButton shape="circle" icon={leftButtonIcon} onClick={handleLeftButtonClick} />
+              <ControlButton
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={handleMiddleButtonClick}
+              />
+              <ControlButton
+                shape="circle"
+                icon={rightButtonIcon}
+                onClick={handleRightButtonClick}
+              />
             </Controls>
           </ImageWrapper>
         </Badge>

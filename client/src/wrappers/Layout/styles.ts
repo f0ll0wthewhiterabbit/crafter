@@ -13,6 +13,11 @@ export const Header = styled(AntdHeader)`
   justify-content: flex-end;
   align-items: center;
   line-height: 1.15;
+
+  @media (max-width: 569px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 `
 
 export const Content = styled(AntdContent)`
@@ -20,6 +25,9 @@ export const Content = styled(AntdContent)`
   justify-content: center;
   align-items: center;
   position: relative;
+  max-width: 1920px;
+  margin-left: auto;
+  margin-right: auto;
 `
 
 export const Footer = styled(AntdFooter)`

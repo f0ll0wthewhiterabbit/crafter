@@ -10,4 +10,14 @@ export const Wrapper = styled.main`
   > * + * {
     margin-left: 20px;
   }
+
+  @media (max-width: 569px) {
+    flex-direction: column;
+    justify-content: flex-start;
+
+    > * + * {
+      margin-left: 0;
+      margin-top: 20px;
+    }
+  }
 `

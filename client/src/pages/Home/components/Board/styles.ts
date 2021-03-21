@@ -42,9 +42,14 @@ export const Wrapper = styled.section<{ isAnimated?: boolean }>`
   flex-grow: 1;
   border-radius: 20px;
   padding: 0 20px 20px;
-  max-width: calc(100% / 3);
+  width: calc(100% / 3);
   position: relative;
   ${({ isAnimated }) => isAnimated && pulseAnimation}
+
+  @media (max-width: 569px) {
+    width: 100%;
+    flex-grow: 0;
+  }
 `
 
 export const Header = styled.header`
@@ -69,6 +74,31 @@ export const Content = styled.div`
   padding-top: 20px;
   padding-bottom: 20px;
   display: grid;
-  grid-gap: 20px;
-  grid-template-columns: repeat(auto-fill, 130px);
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 15px;
+
+  @media (min-width: 410px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media (min-width: 500px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  @media (min-width: 570px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 780px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (min-width: 1150px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media (min-width: 1700px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+  }
 `
