@@ -43,6 +43,7 @@ export const Wrapper = styled.section<{ isAnimated?: boolean }>`
   border-radius: 20px;
   padding: 0 20px 20px;
   width: calc(100% / 3);
+  min-width: calc(100% / 3);
   position: relative;
   ${({ isAnimated }) => isAnimated && pulseAnimation}
 
