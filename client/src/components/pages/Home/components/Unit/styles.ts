@@ -2,6 +2,8 @@ import styled, { css } from 'styled-components'
 import { Button as AntdButton, Badge as AntdBadge } from 'antd'
 
 export const Wrapper = styled.div<{ isCraftedItem: boolean }>`
+  position: relative;
+
   .ant-badge-count {
     background: ${({ isCraftedItem, theme }) =>
       isCraftedItem ? theme.colors.background.badgeItem : theme.colors.background.badgeRecipe};
@@ -9,7 +11,9 @@ export const Wrapper = styled.div<{ isCraftedItem: boolean }>`
 `
 
 export const Badge = styled(AntdBadge)`
-  width: 100%;
+  position: absolute;
+  top: -10px;
+  right: -7px;
 `
 
 export const ImageWrapper = styled.div<{ tabIndex: number }>`

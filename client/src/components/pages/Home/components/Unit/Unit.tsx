@@ -110,36 +110,27 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
   return (
     <Wrapper isCraftedItem={isCraftedItem}>
       <Tooltip title={title}>
-        <Badge
-          count={isRecipe ? 'Recipe' : isCraftedItem ? 'Crafted' : 0}
-          showZero={false}
-          offset={[-20, 0]}
+        <ImageWrapper
+          tabIndex={0}
+          onFocus={handleImageWrapperFocus}
+          onBlur={handleImageWrapperBlur}
+          onMouseEnter={handleImageWrapperFocus}
+          onMouseLeave={handleImageWrapperBlur}
+          onClick={showUnitModal}
+          onKeyPress={handleImageWrapperKeyPress}
         >
-          <ImageWrapper
-            tabIndex={0}
-            onFocus={handleImageWrapperFocus}
-            onBlur={handleImageWrapperBlur}
-            onMouseEnter={handleImageWrapperFocus}
-            onMouseLeave={handleImageWrapperBlur}
-            onClick={showUnitModal}
-            onKeyPress={handleImageWrapperKeyPress}
-          >
-            <Image src={imageSrc} alt={title} isFocused={isFocused} />
-            <Controls $isVisible={isFocused}>
-              <ControlButton shape="circle" icon={leftButtonIcon} onClick={handleLeftButtonClick} />
-              <ControlButton
-                shape="circle"
-                icon={<EditOutlined />}
-                onClick={handleMiddleButtonClick}
-              />
-              <ControlButton
-                shape="circle"
-                icon={rightButtonIcon}
-                onClick={handleRightButtonClick}
-              />
-            </Controls>
-          </ImageWrapper>
-        </Badge>
+          <Image src={imageSrc} alt={title} isFocused={isFocused} />
+          <Controls $isVisible={isFocused}>
+            <ControlButton shape="circle" icon={leftButtonIcon} onClick={handleLeftButtonClick} />
+            <ControlButton
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={handleMiddleButtonClick}
+            />
+            <ControlButton shape="circle" icon={rightButtonIcon} onClick={handleRightButtonClick} />
+          </Controls>
+        </ImageWrapper>
+        <Badge count={isRecipe ? 'Recipe' : isCraftedItem ? 'Crafted' : 0} showZero={false} />
       </Tooltip>
       <DeleteModal
         isVisible={isDeleteModalVisible}
