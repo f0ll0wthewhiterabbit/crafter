@@ -3,8 +3,10 @@ import { Item, ItemForm } from '@/types/item.types'
 import { ItemDeleteResponse } from '@/types/response.types'
 
 export const itemsService = {
-  async getItems(isFiltered = true): Promise<Item[]> {
-    const { data: items } = await apiClient.get(`/items?filterParents=${isFiltered}`)
+  async getItems(canFilterParents = true, canFilterForeign = true): Promise<Item[]> {
+    const { data: items } = await apiClient.get(
+      `/items?filterParents=${canFilterParents}&filterForeign=${canFilterForeign}`
+    )
 
     return items
   },

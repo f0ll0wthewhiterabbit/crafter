@@ -31,8 +31,14 @@ export class ItemsController {
   }
 
   @Get()
-  findAll(@Query('filterParents', ParseBoolPipe) filterParents: boolean) {
-    return this.itemsService.findAll(filterParents)
+  findAll(
+    @Query('filterParents', ParseBoolPipe) filterParents: boolean,
+    @Query('filterForeign', ParseBoolPipe) filterForeign: boolean,
+    @Req() request: RequestWithUser
+  ) {
+    const { userId } = request.user
+
+    return this.itemsService.findAll(filterParents, filterForeign, userId)
   }
 
   @Get(':id')
@@ -53,6 +59,7 @@ export class ItemsController {
   @Get('bag/:id')
   bag(@Param('id') id: Types.ObjectId, @Req() request: RequestWithUser) {
     const { userId } = request.user
+
     return this.itemsService.bag(id, userId)
   }
 

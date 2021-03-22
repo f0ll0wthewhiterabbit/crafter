@@ -3,8 +3,10 @@ import { Recipe, RecipeForm } from '@/types/recipe.types'
 import { RecipeDeleteResponse } from '@/types/response.types'
 
 export const recipesService = {
-  async getRecipes(isFiltered = true): Promise<Recipe[]> {
-    const { data: recipes } = await apiClient.get(`/recipes?filterParents=${isFiltered}`)
+  async getRecipes(canFilterParents = true, canFilterForeign = true): Promise<Recipe[]> {
+    const { data: recipes } = await apiClient.get(
+      `/recipes?filterParents=${canFilterParents}&filterForeign=${canFilterForeign}`
+    )
 
     return recipes
   },

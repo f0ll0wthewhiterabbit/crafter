@@ -22,8 +22,16 @@ export class RecipesService {
     return await createdCat.save()
   }
 
-  async findAll(filterParents: boolean): Promise<Recipe[]> {
-    const filter = filterParents ? { isParent: false } : {}
+  async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Recipe[]> {
+    const filter = {} as any
+
+    if (filterParents) {
+      filter.isParent = false
+    }
+
+    if (filterForeign) {
+      filter.belongsTo = { $in: [null, userId] }
+    }
 
     return await this.recipeModel.find(filter).exec()
   }

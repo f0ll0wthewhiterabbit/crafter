@@ -22,8 +22,16 @@ export class ItemsService {
     return await createdCat.save()
   }
 
-  async findAll(filterParents: boolean): Promise<Item[]> {
-    const filter = filterParents ? { isParent: false } : {}
+  async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Item[]> {
+    const filter = {} as any
+
+    if (filterParents) {
+      filter.isParent = false
+    }
+
+    if (filterForeign) {
+      filter.belongsTo = { $in: [null, userId] }
+    }
 
     return await this.itemModel.find(filter).exec()
   }
