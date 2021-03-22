@@ -1,8 +1,10 @@
 import styled, { css } from 'styled-components'
 import { Button as AntdButton, Badge as AntdBadge } from 'antd'
 
-export const Wrapper = styled.div<{ isCraftedItem: boolean }>`
+export const Wrapper = styled.div<{ isDragging: boolean; isCraftedItem: boolean }>`
   position: relative;
+  opacity: ${({ isDragging }) => (isDragging ? 0.3 : 1)};
+  border-radius: 10px;
 
   .ant-badge-count {
     background: ${({ isCraftedItem, theme }) =>

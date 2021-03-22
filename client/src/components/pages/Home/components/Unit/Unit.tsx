@@ -1,5 +1,6 @@
 import React, { FC, KeyboardEvent, SyntheticEvent, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useDrag } from 'react-dnd'
 import { Tooltip } from 'antd'
 import {
   ArrowLeftOutlined,
@@ -16,15 +17,30 @@ import { Item } from '@/types/item.types'
 import { UNIT_TYPES, UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
 import { extractRecipeFromBagRequest, moveRecipeToBagRequest } from '@/store/recipesSlice'
 import { extractItemFromBagRequest, moveItemToBagRequest } from '@/store/itemsSlice'
+import { DRAG_UNIT_TYPES } from '@/constants/dragAndDrop.constants'
+import { DropTargetMonitorPayload } from '@/types/dragAndDrop.types'
 
 import { Wrapper, ImageWrapper, Image, Controls, ControlButton, Badge } from './styles'
 
-const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) => {
+const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES; dragUnitType: DRAG_UNIT_TYPES }> = ({
+  unit,
+  unitType,
+  dragUnitType,
+}) => {
   const dispatch = useDispatch()
   const [isFocused, setIsFocused] = useState(false)
   const [isUnitFormModalVisible, setIsUnitFormModalVisible] = useState(false)
   const [isUnitModalVisible, setIsUnitModalVisible] = useState(false)
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: dragUnitType,
+    item: { id: unit._id, dragUnitType } as DropTargetMonitorPayload,
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }))
+
   const { _id: id, title, imageSrc, belongsTo } = unit
   const isRecipe = unitType === UNIT_TYPES.RECIPE
   const isCraftedItem = Boolean((unit as Item).parentRecipe)
@@ -108,7 +124,7 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES }> = ({ unit, unitType }) 
   }
 
   return (
-    <Wrapper isCraftedItem={isCraftedItem}>
+    <Wrapper ref={drag} isDragging={isDragging} isCraftedItem={isCraftedItem}>
       <Tooltip title={title}>
         <ImageWrapper
           tabIndex={0}

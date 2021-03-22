@@ -103,3 +103,14 @@ export const Content = styled.div`
     grid-gap: 20px;
   }
 `
+
+export const DropOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0.5;
+  background-color: ${({ theme }) => theme.colors.background.dropOverlay};
+  border-radius: 20px;
+`

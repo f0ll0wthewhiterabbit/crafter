@@ -1,11 +1,16 @@
 import React, { FC, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useDrop } from 'react-dnd'
 
 import { UNIT_TYPES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
 import Board from '@/components/pages/Home/components/Board'
 import Unit from '@/components/pages/Home/components/Unit'
 import { TypedUnit } from '@/types/unit.types'
+import { DRAG_UNIT_TYPES } from '@/constants/dragAndDrop.constants'
+import { DropTargetMonitorWithPayload } from '@/types/dragAndDrop.types'
+import { moveItemToBagRequest } from '@/store/itemsSlice'
+import { moveRecipeToBagRequest } from '@/store/recipesSlice'
 
 const Bag: FC = () => {
   const { data: items } = useSelector((state: RootState) => state.items)
@@ -13,6 +18,7 @@ const Bag: FC = () => {
   const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
   const { user } = useSelector((state: RootState) => state.auth)
   const [isAnimated, setIsAnimated] = useState(false)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (itemsLoadingState === 'crafted') {
@@ -22,6 +28,22 @@ const Bag: FC = () => {
       }, 5000)
     }
   }, [itemsLoadingState])
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: [DRAG_UNIT_TYPES.ITEM, DRAG_UNIT_TYPES.RECIPE],
+    drop: (monitor: DropTargetMonitorWithPayload) => {
+      const { id, dragUnitType } = monitor
+
+      if (dragUnitType === DRAG_UNIT_TYPES.ITEM) {
+        dispatch(moveItemToBagRequest(id))
+      } else if (dragUnitType === DRAG_UNIT_TYPES.RECIPE) {
+        dispatch(moveRecipeToBagRequest(id))
+      }
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }))
 
   const bagUnits = [
     ...items
@@ -47,9 +69,24 @@ const Bag: FC = () => {
   })
 
   return (
-    <Board title="Bag" isLoaderVisible={false} isAnimated={isAnimated}>
+    <Board
+      dropRef={drop}
+      isDropOver={isOver}
+      title="Bag"
+      isLoaderVisible={false}
+      isAnimated={isAnimated}
+    >
       {sortedBagUnits.map((unit) => (
-        <Unit unit={unit} unitType={unit.type} key={unit._id} />
+        <Unit
+          unit={unit}
+          unitType={unit.type}
+          dragUnitType={
+            unit.type === UNIT_TYPES.RECIPE
+              ? DRAG_UNIT_TYPES.BAGGED_RECIPE
+              : DRAG_UNIT_TYPES.BAGGED_ITEM
+          }
+          key={unit._id}
+        />
       ))}
     </Board>
   )

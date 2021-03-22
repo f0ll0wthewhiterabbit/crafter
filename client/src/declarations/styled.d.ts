@@ -18,6 +18,7 @@ declare module 'styled-components' {
         loader: string
         badgeItem: string
         badgeRecipe: string
+        dropOverlay: string
       }
       border: {
         board: string

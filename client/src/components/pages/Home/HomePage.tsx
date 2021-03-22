@@ -1,6 +1,8 @@
 import React, { FC, useEffect } from 'react'
 import { Redirect } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import { fetchItemsRequest } from '@/store/itemsSlice'
 import { fetchRecipesRequest } from '@/store/recipesSlice'
@@ -29,11 +31,13 @@ const HomePage: FC = () => {
   }
 
   return (
-    <Wrapper>
-      <Items />
-      <Bag />
-      <Recipes />
-    </Wrapper>
+    <DndProvider backend={HTML5Backend}>
+      <Wrapper>
+        <Items />
+        <Bag />
+        <Recipes />
+      </Wrapper>
+    </DndProvider>
   )
 }
 

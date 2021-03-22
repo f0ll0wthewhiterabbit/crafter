@@ -20,6 +20,7 @@ const theme: DefaultTheme = {
       loader: '#fff',
       badgeItem: '#e91cec',
       badgeRecipe: '#ff4d4f',
+      dropOverlay: '#cedff9',
     },
     border: {
       board: '#d4dfe9',
