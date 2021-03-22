@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Redirect } from 'react-router'
 
-import SignUpForm from '@/pages/SignUp/components/SignUpForm'
+import SignUpForm from '@/components/pages/SignUp/components/SignUpForm'
 import { signOutRequest } from '@/store/authSlice'
 import { ROUTE_NAMES } from '@/router/routes.constants'
 import { RootState } from '@/store/rootReducer'

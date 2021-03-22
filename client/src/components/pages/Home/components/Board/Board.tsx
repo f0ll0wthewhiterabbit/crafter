@@ -1,4 +1,4 @@
-import Loader from '@/components/Loader'
+import Loader from '@/components/shared/Loader'
 import React, { FC, ReactNode } from 'react'
 
 import { Wrapper, Header, Title, Content } from './styles'

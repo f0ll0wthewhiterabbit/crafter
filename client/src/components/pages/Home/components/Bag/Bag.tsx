@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux'
 
 import { UNIT_TYPES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
-import Board from '@/pages/Home/components/Board'
-import Unit from '@/pages/Home/components/Unit'
+import Board from '@/components/pages/Home/components/Board'
+import Unit from '@/components/pages/Home/components/Unit'
 import { TypedUnit } from '@/types/unit.types'
 
 const Bag: FC = () => {

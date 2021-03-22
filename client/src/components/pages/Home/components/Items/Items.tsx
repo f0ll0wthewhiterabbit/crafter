@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux'
 
 import { UNIT_FORM_MODAL_MODES, UNIT_TYPES } from '@/constants/unit.constants'
 import { RootState } from '@/store/rootReducer'
-import Board from '@/pages/Home/components/Board'
-import AddButton from '@/pages/Home/components/AddButton'
-import Unit from '@/pages/Home/components/Unit'
+import Board from '@/components/pages/Home/components/Board'
+import AddButton from '@/components/pages/Home/components/AddButton'
+import Unit from '@/components/pages/Home/components/Unit'
 
 const Items: FC = () => {
   const { data: items } = useSelector((state: RootState) => state.items)

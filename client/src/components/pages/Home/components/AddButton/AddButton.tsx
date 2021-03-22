@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 import { Tooltip } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
-import UnitFormModal from '@/pages/Home/components/UnitFormModal'
+import UnitFormModal from '@/components/pages/Home/components/UnitFormModal'
 import { UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
 
 import { Button } from './styles'

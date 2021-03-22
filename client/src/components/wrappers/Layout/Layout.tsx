@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { notification } from 'antd'
 import { IconType } from 'antd/lib/notification'
 
-import Loader from '@/components/Loader'
+import Loader from '@/components/shared/Loader'
 import { RootState } from '@/store/rootReducer'
 import { resetItemsError } from '@/store/itemsSlice'
 import { resetRecipesError } from '@/store/recipesSlice'

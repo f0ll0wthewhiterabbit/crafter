@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import ThemeProvider from '@/wrappers/ThemeProvider'
+import ThemeProvider from '@/components/wrappers/ThemeProvider'
 import Router from '@/router/Router'
 import { signInRequest } from '@/store/authSlice'
 

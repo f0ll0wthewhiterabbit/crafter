@@ -1,11 +1,11 @@
 import React from 'react'
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 
-import SignInPage from '@/pages/SignIn'
-import SignUpPage from '@/pages/SignUp'
-import HomePage from '@/pages/Home'
-import ErrorPage from '@/pages/Error'
-import Layout from '@/wrappers/Layout'
+import SignInPage from '@/components/pages/SignIn'
+import SignUpPage from '@/components/pages/SignUp'
+import HomePage from '@/components/pages/Home'
+import ErrorPage from '@/components/pages/Error'
+import Layout from '@/components/wrappers/Layout'
 import { ROUTE_NAMES } from '@/router/routes.constants'
 
 export const Router: React.FC = () => {

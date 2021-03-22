@@ -8,9 +8,9 @@ import {
   EditOutlined,
 } from '@ant-design/icons'
 
-import DeleteModal from '@/pages/Home/components/DeleteModal'
-import UnitFormModal from '@/pages/Home/components/UnitFormModal'
-import UnitModal from '@/pages/Home/components/UnitModal'
+import DeleteModal from '@/components/pages/Home/components/DeleteModal'
+import UnitFormModal from '@/components/pages/Home/components/UnitFormModal'
+import UnitModal from '@/components/pages/Home/components/UnitModal'
 import { Unit as UnitType } from '@/types/unit.types'
 import { Item } from '@/types/item.types'
 import { UNIT_TYPES, UNIT_FORM_MODAL_MODES } from '@/constants/unit.constants'
