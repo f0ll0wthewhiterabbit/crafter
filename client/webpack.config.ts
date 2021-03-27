@@ -80,7 +80,7 @@ const webpackConfig = (env: any): Configuration => ({
         {
           from: 'public',
           globOptions: {
-            ignore: ['**/index.html', '**/favicon.ico'],
+            ignore: ['**/index.html'],
           },
         },
       ],
