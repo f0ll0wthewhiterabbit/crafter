@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { MongooseModule } from '@nestjs/mongoose'
+import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'path'
 
 import { AppController } from './app.controller'
 import { ItemsModule } from './items/items.module'
@@ -19,6 +21,9 @@ import { UsersModule } from './users/users.module'
     RecipesModule,
     AuthModule,
     UsersModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client', 'dist'),
+    }),
   ],
   controllers: [AppController],
 })
