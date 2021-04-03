@@ -28,6 +28,7 @@ export const Content = styled(AntdContent)`
 
   @media (min-width: 1920px) {
     max-width: 1920px;
+    min-width: 1920px;
     margin-left: auto;
     margin-right: auto;
   }
