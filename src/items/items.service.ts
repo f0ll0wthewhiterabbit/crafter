@@ -1,94 +1,94 @@
 import { Injectable, NotImplementedException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model, Types, UpdateQuery } from 'mongoose'
+import { InjectRepository } from '@nestjs/typeorm'
+import { In, IsNull, Repository } from 'typeorm'
 
 import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from 'src/recipes/constants'
-import { Recipe, RecipeDocument } from 'src/recipes/schemas/recipe.schema'
 
 import { CreateItemDto } from './dto/create-item.dto'
 import { UpdateItemDto } from './dto/update-item.dto'
-import { Item, ItemDocument } from './schemas/item.schema'
+import { Item } from './entities/item.entity'
+import { Recipe } from 'src/recipes/entities/recipe.entity'
 
 @Injectable()
 export class ItemsService {
   constructor(
-    @InjectModel(Item.name) private itemModel: Model<ItemDocument>,
-    @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>
+    @InjectRepository(Item) private itemsRepository: Repository<Item>,
+    @InjectRepository(Recipe) private recipesRepository: Repository<Recipe>
   ) {}
 
   async create(createItemDto: CreateItemDto): Promise<Item> {
-    const createdCat = new this.itemModel(createItemDto)
+    const item = await this.itemsRepository.create(createItemDto)
 
-    return await createdCat.save()
+    return await this.itemsRepository.save(item)
   }
 
   async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Item[]> {
-    const filter = {} as any
+    let filter = {} as any
 
-    if (filterParents) {
-      filter.isParent = false
+    if (filterParents && filterForeign) {
+      filter = [
+        { belongsTo: IsNull(), isParent: false },
+        { belongsTo: userId, isParent: false },
+      ]
+    } else if (filterParents) {
+      filter = { isParent: false }
+    } else if (filterForeign) {
+      filter = [{ belongsTo: IsNull() }, { belongsTo: userId }]
     }
 
-    if (filterForeign) {
-      filter.belongsTo = { $in: [null, userId] }
-    }
-
-    return await this.itemModel.find(filter).exec()
+    return await this.itemsRepository.find({ where: filter })
   }
 
-  async findOne(id: Types.ObjectId): Promise<Item> {
-    return await this.itemModel.findById(id).exec()
+  async findOne(id: string): Promise<Item> {
+    return await this.itemsRepository.findOne(id)
   }
 
-  async update(id: Types.ObjectId, updateItemDto: UpdateItemDto): Promise<Item> {
-    const updatedFields = updateItemDto as any
+  async update(id: string, updateItemDto: UpdateItemDto): Promise<Item> {
+    const item = await this.itemsRepository.findOne(id)
 
-    return await this.itemModel
-      .findByIdAndUpdate(id, updatedFields as UpdateQuery<ItemDocument>, { new: true })
-      .exec()
+    return await this.itemsRepository.save({ ...item, ...updateItemDto })
   }
 
-  async remove(
-    id: Types.ObjectId
-  ): Promise<{ removedItems: Types.ObjectId[]; removedRecipes: Types.ObjectId[] }> {
-    const removedItem = await this.itemModel.findByIdAndDelete(id).exec()
+  async remove(id: string): Promise<{ removedItems: string[]; removedRecipes: string[] }> {
+    const { parentItems, parentRecipe } = await this.itemsRepository.findOne(id)
+    const { affected } = await this.itemsRepository.delete(id)
 
-    if (!removedItem) {
+    if (!affected) {
       throw new NotImplementedException()
     }
 
-    const { parentItems, parentRecipe } = removedItem
-    const removedItems = [removedItem.id]
+    const removedItems = [id]
     const removedRecipes = []
 
     if (parentRecipe) {
-      await this.recipeModel.findByIdAndDelete(parentRecipe)
+      await this.recipesRepository.delete(parentRecipe)
       removedRecipes.push(parentRecipe)
     }
 
     if (parentItems.length) {
-      await this.itemModel.deleteMany({ _id: { $in: parentItems } })
+      await this.itemsRepository.delete(parentItems)
       removedRecipes.push(...parentItems)
     }
 
     return { removedItems, removedRecipes }
   }
 
-  async bag(id: Types.ObjectId, userId: string): Promise<Item> {
-    const updatedFields = {
-      belongsTo: userId,
-      baggageDate: new Date().toISOString(),
-    } as any
-    const baggedItem = await this.itemModel
-      .findByIdAndUpdate(id, updatedFields, { new: true })
-      .exec()
-    const baggedRecipes = await this.recipeModel.find({ belongsTo: userId, isParent: false }).exec()
-    let craftedItem
+  async bag(id: string, userId: string): Promise<Item> {
+    const baggedItem = await this.itemsRepository.findOne(id)
+    baggedItem.belongsTo = userId
+    baggedItem.baggageDate = new Date()
+    await this.itemsRepository.save(baggedItem)
+    const baggedRecipes = await this.recipesRepository.find({ belongsTo: userId, isParent: false })
+    let craftedItem: Item
 
     if (baggedRecipes.length) {
-      const baggedItems = await this.itemModel
-        .find({ belongsTo: userId, parentRecipe: { $exists: false }, isParent: false })
-        .exec()
+      const baggedItems = await this.itemsRepository.find({
+        where: {
+          belongsTo: userId,
+          parentRecipe: IsNull(),
+          isParent: false,
+        },
+      })
 
       if (baggedItems.length >= MIN_NUMBER_OF_ITEMS_IN_RECIPE) {
         for (const baggedRecipe of baggedRecipes) {
@@ -101,32 +101,23 @@ export class ItemsService {
               )
 
               if (matchedItem) {
-                includedItemsIdList.push(matchedItem._id)
+                includedItemsIdList.push(matchedItem.id)
               }
             })
 
             if (includedItemsIdList.length === baggedRecipe.itemTitles.length) {
-              craftedItem = new this.itemModel({
+              await this.itemsRepository.insert({
                 title: baggedRecipe.title,
                 imageSrc: baggedRecipe.imageSrc,
-                parentRecipe: baggedRecipe._id,
+                parentRecipe: baggedRecipe.id,
                 parentItems: includedItemsIdList,
                 belongsTo: userId,
                 craftDate: new Date().toISOString(),
                 baggageDate: new Date().toISOString(),
               })
-              await craftedItem.save()
 
-              await this.recipeModel.findByIdAndUpdate(
-                baggedRecipe._id,
-                { isParent: true } as any,
-                { new: true }
-              )
-              await this.itemModel.updateMany(
-                { _id: { $in: includedItemsIdList } },
-                { isParent: true },
-                { new: true }
-              )
+              await this.recipesRepository.update(baggedRecipe.id, { isParent: true })
+              await this.itemsRepository.update({ id: In(includedItemsIdList) }, { isParent: true })
             }
           }
         }
@@ -136,16 +127,11 @@ export class ItemsService {
     return craftedItem || baggedItem
   }
 
-  async unbag(id: Types.ObjectId): Promise<Item> {
-    const updatedFields = {
-      belongsTo: null,
-      baggageDate: null,
-    } as UpdateQuery<ItemDocument>
+  async unbag(id: string): Promise<Item> {
+    const item = await this.itemsRepository.findOne(id)
+    item.belongsTo = null
+    item.baggageDate = null
 
-    return await this.itemModel
-      .findByIdAndUpdate(id, updatedFields, {
-        new: true,
-      })
-      .exec()
+    return await this.itemsRepository.save(item)
   }
 }

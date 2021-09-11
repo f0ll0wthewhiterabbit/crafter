@@ -1,18 +1,18 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
 import { CreateUserDto } from './dto/create-user.dto'
-import { User, UserDocument } from './schemas/user.schema'
+import { User } from './entities/user.entity'
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
 
   async create(createUserDto: CreateUserDto): Promise<Partial<User>> {
     const { email, password: initialPassword } = createUserDto
-    const existingUser = await this.userModel.findOne({ email })
+    const existingUser = await this.usersRepository.findOne({ email })
 
     if (existingUser) {
       throw new NotAcceptableException('User already exists')
@@ -21,15 +21,15 @@ export class UsersService {
     const saltRounds = 10
     const hashedPassword = await bcrypt.hash(initialPassword, saltRounds)
 
-    const createdUser = new this.userModel({ ...createUserDto, password: hashedPassword })
-    await createdUser.save()
+    const createdUser = { ...createUserDto, password: hashedPassword }
+    await this.usersRepository.insert(createdUser)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = JSON.parse(JSON.stringify(createdUser))
+    const { password, ...result } = createdUser
 
     return result
   }
 
   async findOne(email: string): Promise<User> {
-    return await this.userModel.findOne({ email }).exec()
+    return await this.usersRepository.findOne({ email })
   }
 }

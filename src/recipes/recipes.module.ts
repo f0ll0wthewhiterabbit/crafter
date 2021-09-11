@@ -1,19 +1,16 @@
 import { forwardRef, Module } from '@nestjs/common'
-import { MongooseModule } from '@nestjs/mongoose'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { ItemsModule } from 'src/items/items.module'
 
 import { RecipesService } from './recipes.service'
 import { RecipesController } from './recipes.controller'
-import { Recipe, RecipeSchema } from './schemas/recipe.schema'
+import { Recipe } from './entities/recipe.entity'
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Recipe.name, schema: RecipeSchema }]),
-    forwardRef(() => ItemsModule),
-  ],
+  imports: [TypeOrmModule.forFeature([Recipe]), forwardRef(() => ItemsModule)],
   controllers: [RecipesController],
   providers: [RecipesService],
-  exports: [MongooseModule],
+  exports: [TypeOrmModule],
 })
 export class RecipesModule {}

@@ -11,7 +11,6 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common'
-import { Types } from 'mongoose'
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { RequestWithUser } from 'src/auth/types'
@@ -42,29 +41,29 @@ export class ItemsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: Types.ObjectId) {
+  findOne(@Param('id') id: string) {
     return this.itemsService.findOne(id)
   }
 
   @Put(':id')
-  update(@Param('id') id: Types.ObjectId, @Body() updateItemDto: UpdateItemDto) {
+  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
     return this.itemsService.update(id, updateItemDto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: Types.ObjectId) {
+  remove(@Param('id') id: string) {
     return this.itemsService.remove(id)
   }
 
   @Get('bag/:id')
-  bag(@Param('id') id: Types.ObjectId, @Req() request: RequestWithUser) {
+  bag(@Param('id') id: string, @Req() request: RequestWithUser) {
     const { userId } = request.user
 
     return this.itemsService.bag(id, userId)
   }
 
   @Get('unbag/:id')
-  unbag(@Param('id') id: Types.ObjectId) {
+  unbag(@Param('id') id: string) {
     return this.itemsService.unbag(id)
   }
 }
