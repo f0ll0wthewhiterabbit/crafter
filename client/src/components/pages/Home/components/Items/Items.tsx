@@ -41,7 +41,7 @@ const Items: FC = () => {
             unit={item}
             unitType={UNIT_TYPES.ITEM}
             dragUnitType={DRAG_UNIT_TYPES.ITEM}
-            key={item._id}
+            key={item.id}
           />
         ))}
     </Board>

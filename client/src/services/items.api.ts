@@ -17,25 +17,25 @@ export const itemsService = {
     return item
   },
 
-  async editItem(itemId: Item['_id'], itemValues: Partial<Item>): Promise<Item> {
+  async editItem(itemId: Item['id'], itemValues: Partial<Item>): Promise<Item> {
     const { data: item } = await apiClient.put(`/items/${itemId}`, itemValues)
 
     return item
   },
 
-  async deleteItem(itemId: Item['_id']): Promise<ItemDeleteResponse> {
+  async deleteItem(itemId: Item['id']): Promise<ItemDeleteResponse> {
     const { data } = await apiClient.delete(`/items/${itemId}`)
 
     return data
   },
 
-  async bag(itemId: Item['_id']): Promise<Item> {
+  async bag(itemId: Item['id']): Promise<Item> {
     const { data: item } = await apiClient.get(`/items/bag/${itemId}`)
 
     return item
   },
 
-  async unbag(itemId: Item['_id']): Promise<Item> {
+  async unbag(itemId: Item['id']): Promise<Item> {
     const { data: item } = await apiClient.get(`/items/unbag/${itemId}`)
 
     return item

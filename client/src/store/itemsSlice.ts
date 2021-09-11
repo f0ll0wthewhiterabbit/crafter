@@ -29,7 +29,7 @@ interface FetchItemsPayload {
 }
 
 interface MoveItemToBagPayload {
-  itemId: Item['_id']
+  itemId: Item['id']
   baggageDate: Item['baggageDate']
   belongsTo: Item['belongsTo']
 }
@@ -60,7 +60,7 @@ const itemsSlice = createSlice({
       state.error = null
     },
     editItemSuccess(state, { payload: item }: PayloadAction<Item>) {
-      const itemIndex = state.data.findIndex((stateItem) => stateItem._id === item._id)
+      const itemIndex = state.data.findIndex((stateItem) => stateItem.id === item.id)
 
       if (itemIndex > -1) {
         state.data[itemIndex] = item
@@ -69,8 +69,8 @@ const itemsSlice = createSlice({
       state.loadingState = 'loaded'
       state.error = null
     },
-    deleteItemSuccess(state, { payload: itemId }: PayloadAction<Item['_id']>) {
-      const itemIndex = state.data.findIndex((stateItem) => stateItem._id === itemId)
+    deleteItemSuccess(state, { payload: itemId }: PayloadAction<Item['id']>) {
+      const itemIndex = state.data.findIndex((stateItem) => stateItem.id === itemId)
 
       if (itemIndex > -1) {
         state.data.splice(itemIndex, 1)
@@ -81,7 +81,7 @@ const itemsSlice = createSlice({
     },
     moveItemToBagSuccess(state, { payload }: PayloadAction<MoveItemToBagPayload>) {
       const { itemId, baggageDate, belongsTo } = payload
-      const itemIndex = state.data.findIndex((stateItem) => stateItem._id === itemId)
+      const itemIndex = state.data.findIndex((stateItem) => stateItem.id === itemId)
 
       if (itemIndex > -1) {
         state.data[itemIndex].belongsTo = belongsTo
@@ -91,8 +91,8 @@ const itemsSlice = createSlice({
       state.loadingState = 'loaded'
       state.error = null
     },
-    extractItemFromBagSuccess(state, { payload: itemId }: PayloadAction<Item['_id']>) {
-      const itemIndex = state.data.findIndex((stateItem) => stateItem._id === itemId)
+    extractItemFromBagSuccess(state, { payload: itemId }: PayloadAction<Item['id']>) {
+      const itemIndex = state.data.findIndex((stateItem) => stateItem.id === itemId)
 
       if (itemIndex > -1) {
         state.data[itemIndex].belongsTo = null
@@ -151,7 +151,7 @@ export const addItemRequest = (
 }
 
 export const editItemRequest = (
-  itemId: Item['_id'],
+  itemId: Item['id'],
   itemFormValues: ItemForm,
   successCallback: () => void
 ): AppThunk => async (dispatch) => {
@@ -166,7 +166,7 @@ export const editItemRequest = (
 }
 
 export const deleteItemRequest = (
-  itemId: Item['_id'],
+  itemId: Item['id'],
   successCallback: () => void
 ): AppThunk => async (dispatch) => {
   try {
@@ -179,12 +179,12 @@ export const deleteItemRequest = (
   }
 }
 
-export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
+export const moveItemToBagRequest = (itemId: Item['id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading('bagLoading'))
-    const { baggageDate, belongsTo, _id, parentRecipe } = await itemsService.bag(itemId)
+    const { baggageDate, belongsTo, id, parentRecipe } = await itemsService.bag(itemId)
 
-    if (_id !== itemId && parentRecipe) {
+    if (id !== itemId && parentRecipe) {
       dispatch(deleteRecipeSuccess({ recipeId: parentRecipe, isItemCrafted: true }))
       dispatch(fetchItemsRequest(true))
     } else {
@@ -195,7 +195,7 @@ export const moveItemToBagRequest = (itemId: Item['_id']): AppThunk => async (di
   }
 }
 
-export const extractItemFromBagRequest = (itemId: Item['_id']): AppThunk => async (dispatch) => {
+export const extractItemFromBagRequest = (itemId: Item['id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startItemsLoading('bagLoading'))
     await itemsService.unbag(itemId)

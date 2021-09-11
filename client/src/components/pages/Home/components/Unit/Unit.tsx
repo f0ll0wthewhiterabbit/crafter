@@ -35,13 +35,13 @@ const Unit: FC<{ unit: UnitType; unitType: UNIT_TYPES; dragUnitType: DRAG_UNIT_T
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: dragUnitType,
-    item: { id: unit._id, dragUnitType } as DropTargetMonitorPayload,
+    item: { id: unit.id, dragUnitType } as DropTargetMonitorPayload,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }))
 
-  const { _id: id, title, imageSrc, belongsTo } = unit
+  const { id: id, title, imageSrc, belongsTo } = unit
   const isRecipe = unitType === UNIT_TYPES.RECIPE
   const isCraftedItem = Boolean((unit as Item).parentRecipe)
 

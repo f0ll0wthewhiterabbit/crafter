@@ -41,7 +41,7 @@ const Recipes: FC = () => {
             unit={recipe}
             unitType={UNIT_TYPES.RECIPE}
             dragUnitType={DRAG_UNIT_TYPES.RECIPE}
-            key={recipe._id}
+            key={recipe.id}
           />
         ))}
     </Board>

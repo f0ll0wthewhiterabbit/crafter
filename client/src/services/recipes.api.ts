@@ -17,25 +17,25 @@ export const recipesService = {
     return recipe
   },
 
-  async editRecipe(recipeId: Recipe['_id'], recipeValues: Partial<Recipe>): Promise<Recipe> {
+  async editRecipe(recipeId: Recipe['id'], recipeValues: Partial<Recipe>): Promise<Recipe> {
     const { data: recipe } = await apiClient.put(`/recipes/${recipeId}`, recipeValues)
 
     return recipe
   },
 
-  async deleteRecipe(recipeId: Recipe['_id']): Promise<RecipeDeleteResponse> {
+  async deleteRecipe(recipeId: Recipe['id']): Promise<RecipeDeleteResponse> {
     const { data } = await apiClient.delete(`/recipes/${recipeId}`)
 
     return data
   },
 
-  async bag(recipeId: Recipe['_id']): Promise<Recipe> {
+  async bag(recipeId: Recipe['id']): Promise<Recipe> {
     const { data: recipe } = await apiClient.get(`/recipes/bag/${recipeId}`)
 
     return recipe
   },
 
-  async unbag(recipeId: Recipe['_id']): Promise<Recipe> {
+  async unbag(recipeId: Recipe['id']): Promise<Recipe> {
     const { data: recipe } = await apiClient.get(`/recipes/unbag/${recipeId}`)
 
     return recipe

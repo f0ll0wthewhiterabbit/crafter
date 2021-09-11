@@ -33,7 +33,7 @@ const UnitFormModal: FC<UnitFormModalProps> = ({
   const { loadingState: itemsLoadingState } = useSelector((state: RootState) => state.items)
   const { loadingState: recipesLoadingState } = useSelector((state: RootState) => state.recipes)
   const dispatch = useDispatch()
-  const id = unit?._id || ''
+  const id = unit?.id || ''
   const title = unit?.title || ''
   const imageSrc = unit?.imageSrc || ''
   const itemTitles = (unit as Recipe)?.itemTitles || []

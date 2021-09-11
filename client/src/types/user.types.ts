@@ -1,7 +1,7 @@
 import { MongoDBResponse } from '@/types/response.types'
 
 export interface User extends MongoDBResponse {
-  _id: string
+  id: string
   email: string
 }
 

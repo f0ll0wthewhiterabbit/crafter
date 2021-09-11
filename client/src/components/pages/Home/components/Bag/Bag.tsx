@@ -47,10 +47,10 @@ const Bag: FC = () => {
 
   const bagUnits = [
     ...items
-      .filter((item) => item.belongsTo === user?._id)
+      .filter((item) => item.belongsTo === user?.id)
       .map((item) => ({ ...item, type: UNIT_TYPES.ITEM })),
     ...recipes
-      .filter((recipe) => recipe.belongsTo === user?._id)
+      .filter((recipe) => recipe.belongsTo === user?.id)
       .map((recipe) => ({ ...recipe, type: UNIT_TYPES.RECIPE })),
   ] as TypedUnit[]
 
@@ -85,7 +85,7 @@ const Bag: FC = () => {
               ? DRAG_UNIT_TYPES.BAGGED_RECIPE
               : DRAG_UNIT_TYPES.BAGGED_ITEM
           }
-          key={unit._id}
+          key={unit.id}
         />
       ))}
     </Board>

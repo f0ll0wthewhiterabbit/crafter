@@ -8,12 +8,12 @@ export interface MongoDBResponse {
 }
 
 export interface ItemDeleteResponse {
-  removedItems: Item['_id'][]
-  removedRecipes: Recipe['_id'][]
+  removedItems: Item['id'][]
+  removedRecipes: Recipe['id'][]
 }
 
 export interface RecipeDeleteResponse {
-  removedRecipes: Recipe['_id'][]
+  removedRecipes: Recipe['id'][]
 }
 
 export interface SignInResponse {

@@ -17,14 +17,14 @@ interface AuthState {
   isAuthenticated: boolean
   isInitialized: boolean
   accessToken: string | null
-  user: Pick<User, '_id' | 'email'> | null
+  user: Pick<User, 'id' | 'email'> | null
   loadingState: AuthLoadingState
   error: string | null
 }
 
 interface SignInPayload {
   accessToken: string
-  user: Pick<User, '_id' | 'email'>
+  user: Pick<User, 'id' | 'email'>
 }
 
 const initialState: AuthState = {
@@ -48,7 +48,7 @@ const authSlice = createSlice({
     startLoading(state, { payload: loadingState }: PayloadAction<AuthLoadingState>) {
       state.loadingState = loadingState
     },
-    signUpSuccess(state, { payload: user }: PayloadAction<Pick<User, '_id' | 'email'>>) {
+    signUpSuccess(state, { payload: user }: PayloadAction<Pick<User, 'id' | 'email'>>) {
       state.user = user
     },
     signInSuccess(state, { payload }: PayloadAction<SignInPayload>) {
@@ -126,9 +126,9 @@ export const signUpRequest = (userFormValues: UserForm): AppThunk => async (disp
     dispatch(startLoading('loading'))
 
     const { email, password } = userFormValues
-    const { _id } = await authService.signUp({ email, password })
+    const { id } = await authService.signUp({ email, password })
 
-    dispatch(signUpSuccess({ _id, email }))
+    dispatch(signUpSuccess({ id, email }))
     dispatch(signInRequest(false, { email, password }))
   } catch (error) {
     if (error.response.data.statusCode === 406) {

@@ -1,7 +1,7 @@
 import { MongoDBResponse } from '@/types/response.types'
 
 export interface Item extends MongoDBResponse {
-  _id: string
+  id: string
   title: string
   imageSrc: string
   belongsTo: string | null

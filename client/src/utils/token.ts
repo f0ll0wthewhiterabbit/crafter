@@ -25,8 +25,8 @@ export const isAccessTokenExpired = (accessToken: string): boolean => {
   return decoded.exp < currentTime
 }
 
-export const getUserFromAccessToken = (accessToken: string): Pick<User, '_id' | 'email'> => {
-  const { sub: _id, email } = jwtDecode(accessToken) as AccessToken
+export const getUserFromAccessToken = (accessToken: string): Pick<User, 'id' | 'email'> => {
+  const { sub: id, email } = jwtDecode(accessToken) as AccessToken
 
-  return { _id, email }
+  return { id, email }
 }

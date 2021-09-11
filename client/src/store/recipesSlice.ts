@@ -24,12 +24,12 @@ interface RecipesState {
 }
 
 interface DeleteRecipePayload {
-  recipeId: Recipe['_id']
+  recipeId: Recipe['id']
   isItemCrafted: boolean
 }
 
 interface MoveRecipeToBagPayload {
-  recipeId: Recipe['_id']
+  recipeId: Recipe['id']
   baggageDate: Recipe['baggageDate']
   belongsTo: Recipe['belongsTo']
 }
@@ -58,7 +58,7 @@ const recipesSlice = createSlice({
       state.error = null
     },
     editRecipeSuccess(state, { payload: recipe }: PayloadAction<Recipe>) {
-      const recipeIndex = state.data.findIndex((stateItem) => stateItem._id === recipe._id)
+      const recipeIndex = state.data.findIndex((stateItem) => stateItem.id === recipe.id)
 
       if (recipeIndex > -1) {
         state.data[recipeIndex] = recipe
@@ -69,7 +69,7 @@ const recipesSlice = createSlice({
     },
     deleteRecipeSuccess(state, { payload }: PayloadAction<DeleteRecipePayload>) {
       const { recipeId, isItemCrafted } = payload
-      const recipeIndex = state.data.findIndex((stateRecipe) => stateRecipe._id === recipeId)
+      const recipeIndex = state.data.findIndex((stateRecipe) => stateRecipe.id === recipeId)
 
       if (recipeIndex > -1) {
         state.data.splice(recipeIndex, 1)
@@ -80,7 +80,7 @@ const recipesSlice = createSlice({
     },
     moveRecipeToBagSuccess(state, { payload }: PayloadAction<MoveRecipeToBagPayload>) {
       const { recipeId, baggageDate, belongsTo } = payload
-      const recipeIndex = state.data.findIndex((stateRecipe) => stateRecipe._id === recipeId)
+      const recipeIndex = state.data.findIndex((stateRecipe) => stateRecipe.id === recipeId)
 
       if (recipeIndex > -1) {
         state.data[recipeIndex].belongsTo = belongsTo
@@ -90,8 +90,8 @@ const recipesSlice = createSlice({
       state.loadingState = 'loaded'
       state.error = null
     },
-    extractRecipeFromBagSuccess(state, { payload: recipeId }: PayloadAction<Recipe['_id']>) {
-      const recipeIndex = state.data.findIndex((stateRecipe) => stateRecipe._id === recipeId)
+    extractRecipeFromBagSuccess(state, { payload: recipeId }: PayloadAction<Recipe['id']>) {
+      const recipeIndex = state.data.findIndex((stateRecipe) => stateRecipe.id === recipeId)
 
       if (recipeIndex > -1) {
         state.data[recipeIndex].belongsTo = null
@@ -150,7 +150,7 @@ export const addRecipeRequest = (
 }
 
 export const editRecipeRequest = (
-  recipeId: Recipe['_id'],
+  recipeId: Recipe['id'],
   recipeFormValues: RecipeForm,
   successCallback: () => void
 ): AppThunk => async (dispatch) => {
@@ -165,7 +165,7 @@ export const editRecipeRequest = (
 }
 
 export const deleteRecipeRequest = (
-  recipeId: Recipe['_id'],
+  recipeId: Recipe['id'],
   successCallback: () => void
 ): AppThunk => async (dispatch) => {
   try {
@@ -178,7 +178,7 @@ export const deleteRecipeRequest = (
   }
 }
 
-export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => async (dispatch) => {
+export const moveRecipeToBagRequest = (recipeId: Recipe['id']): AppThunk => async (dispatch) => {
   try {
     dispatch(startRecipesLoading('bagLoading'))
     const { baggageDate, belongsTo, isParent } = await recipesService.bag(recipeId)
@@ -194,7 +194,7 @@ export const moveRecipeToBagRequest = (recipeId: Recipe['_id']): AppThunk => asy
   }
 }
 
-export const extractRecipeFromBagRequest = (recipeId: Recipe['_id']): AppThunk => async (
+export const extractRecipeFromBagRequest = (recipeId: Recipe['id']): AppThunk => async (
   dispatch
 ) => {
   try {
