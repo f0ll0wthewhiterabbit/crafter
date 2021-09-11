@@ -17,9 +17,9 @@ export class RecipesService {
   ) {}
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
-    const createdCat = new this.recipeModel(createRecipeDto)
+    const createdRecipe = new this.recipeModel(createRecipeDto)
 
-    return await createdCat.save()
+    return await createdRecipe.save()
   }
 
   async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Recipe[]> {

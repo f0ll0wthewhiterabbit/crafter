@@ -17,9 +17,9 @@ export class ItemsService {
   ) {}
 
   async create(createItemDto: CreateItemDto): Promise<Item> {
-    const createdCat = new this.itemModel(createItemDto)
+    const createdItem = new this.itemModel(createItemDto)
 
-    return await createdCat.save()
+    return await createdItem.save()
   }
 
   async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Item[]> {
