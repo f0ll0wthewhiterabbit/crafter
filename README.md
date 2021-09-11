@@ -34,9 +34,9 @@ npm run start:dev
 
 ## Requirements
 
-Node.js version: 12.20.0
-
-Be sure to add .env file with settings to the root. Put the path to your local or cloud mongodb database in 'MONGO_URI' key.
+- Node.js version: 12.20.0
+- Database: PostgreSQL
+- Add `.env` file with settings to the root. Use `.env.example` as an example.
 
 ---
 
