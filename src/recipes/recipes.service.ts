@@ -8,18 +8,22 @@ import { Recipe, RecipeDocument } from './schemas/recipe.schema'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
 import { MIN_NUMBER_OF_ITEMS_IN_RECIPE } from './constants'
+import { RecipesGateway } from './recipes.gateway'
 
 @Injectable()
 export class RecipesService {
   constructor(
     @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
-    @InjectModel(Item.name) private itemModel: Model<ItemDocument>
+    @InjectModel(Item.name) private itemModel: Model<ItemDocument>,
+    private recipesGateway: RecipesGateway
   ) {}
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
     const createdRecipe = new this.recipeModel(createRecipeDto)
+    const recipe = await createdRecipe.save()
+    this.recipesGateway.handleRecipeAppear(recipe)
 
-    return await createdRecipe.save()
+    return recipe
   }
 
   async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Recipe[]> {
@@ -42,10 +46,12 @@ export class RecipesService {
 
   async update(id: Types.ObjectId, updateRecipeDto: UpdateRecipeDto): Promise<Recipe> {
     const updatedFields = updateRecipeDto as any
-
-    return await this.recipeModel
+    const recipe = await this.recipeModel
       .findByIdAndUpdate(id, updatedFields as UpdateQuery<RecipeDocument>, { new: true })
       .exec()
+    this.recipesGateway.handleRecipeUpdate(recipe)
+
+    return recipe
   }
 
   async remove(id: Types.ObjectId): Promise<{ removedRecipes: Types.ObjectId[] }> {
@@ -55,7 +61,10 @@ export class RecipesService {
       throw new NotImplementedException()
     }
 
-    return { removedRecipes: [removedRecipe.id] }
+    const removedRecipes = [removedRecipe.id]
+    this.recipesGateway.handleRecipesRemove(removedRecipes)
+
+    return { removedRecipes }
   }
 
   async bag(id: Types.ObjectId, userId: string): Promise<Recipe> {
@@ -106,7 +115,12 @@ export class RecipesService {
       }
     }
 
-    return await this.recipeModel.findByIdAndUpdate(id, updatedFields, { new: true }).exec()
+    const updatedRecipe = await this.recipeModel
+      .findByIdAndUpdate(id, updatedFields, { new: true })
+      .exec()
+    this.recipesGateway.handleRecipeBag(updatedRecipe)
+
+    return updatedRecipe
   }
 
   async unbag(id: Types.ObjectId): Promise<Recipe> {
@@ -114,7 +128,9 @@ export class RecipesService {
       belongsTo: null,
       baggageDate: null,
     } as UpdateQuery<RecipeDocument>
+    const recipe = await this.recipeModel.findByIdAndUpdate(id, updatedFields, { new: true }).exec()
+    this.recipesGateway.handleRecipeAppear(recipe)
 
-    return await this.recipeModel.findByIdAndUpdate(id, updatedFields, { new: true }).exec()
+    return recipe
   }
 }

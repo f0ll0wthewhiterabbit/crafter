@@ -55,7 +55,12 @@ const itemsSlice = createSlice({
       state.error = null
     },
     addItemSuccess(state, { payload: item }: PayloadAction<Item>) {
-      state.data.push(item)
+      const isItemExist = state.data.some(({ _id }) => _id === item._id)
+
+      if (!isItemExist) {
+        state.data.push(item)
+      }
+
       state.loadingState = 'loaded'
       state.error = null
     },

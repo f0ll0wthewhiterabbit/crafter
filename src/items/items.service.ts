@@ -7,19 +7,23 @@ import { Recipe, RecipeDocument } from 'src/recipes/schemas/recipe.schema'
 
 import { CreateItemDto } from './dto/create-item.dto'
 import { UpdateItemDto } from './dto/update-item.dto'
+import { ItemsGateway } from './items.gateway'
 import { Item, ItemDocument } from './schemas/item.schema'
 
 @Injectable()
 export class ItemsService {
   constructor(
     @InjectModel(Item.name) private itemModel: Model<ItemDocument>,
-    @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>
+    @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
+    private itemsGateway: ItemsGateway
   ) {}
 
   async create(createItemDto: CreateItemDto): Promise<Item> {
     const createdItem = new this.itemModel(createItemDto)
+    const item = await createdItem.save()
+    this.itemsGateway.handleItemAppear(item)
 
-    return await createdItem.save()
+    return item
   }
 
   async findAll(filterParents: boolean, filterForeign: boolean, userId: string): Promise<Item[]> {
@@ -42,10 +46,12 @@ export class ItemsService {
 
   async update(id: Types.ObjectId, updateItemDto: UpdateItemDto): Promise<Item> {
     const updatedFields = updateItemDto as any
-
-    return await this.itemModel
+    const item = await this.itemModel
       .findByIdAndUpdate(id, updatedFields as UpdateQuery<ItemDocument>, { new: true })
       .exec()
+    this.itemsGateway.handleItemUpdate(item)
+
+    return item
   }
 
   async remove(
@@ -70,6 +76,8 @@ export class ItemsService {
       await this.itemModel.deleteMany({ _id: { $in: parentItems } })
       removedRecipes.push(...parentItems)
     }
+
+    this.itemsGateway.handleItemsRemove(removedItems)
 
     return { removedItems, removedRecipes }
   }
@@ -132,6 +140,7 @@ export class ItemsService {
         }
       }
     }
+    this.itemsGateway.handleItemBag(baggedItem)
 
     return craftedItem || baggedItem
   }
@@ -141,11 +150,13 @@ export class ItemsService {
       belongsTo: null,
       baggageDate: null,
     } as UpdateQuery<ItemDocument>
-
-    return await this.itemModel
+    const item = await this.itemModel
       .findByIdAndUpdate(id, updatedFields, {
         new: true,
       })
       .exec()
+    this.itemsGateway.handleItemAppear(item)
+
+    return item
   }
 }

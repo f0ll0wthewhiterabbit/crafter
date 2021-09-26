@@ -53,7 +53,12 @@ const recipesSlice = createSlice({
       state.error = null
     },
     addRecipeSuccess(state, { payload: recipe }: PayloadAction<Recipe>) {
-      state.data.push(recipe)
+      const isRecipeExist = state.data.some(({ _id }) => _id === recipe._id)
+
+      if (!isRecipeExist) {
+        state.data.push(recipe)
+      }
+
       state.loadingState = 'loaded'
       state.error = null
     },

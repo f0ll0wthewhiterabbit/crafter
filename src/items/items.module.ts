@@ -6,6 +6,7 @@ import { RecipesModule } from 'src/recipes/recipes.module'
 import { ItemsService } from './items.service'
 import { ItemsController } from './items.controller'
 import { Item, ItemSchema } from './schemas/item.schema'
+import { ItemsGateway } from './items.gateway'
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { Item, ItemSchema } from './schemas/item.schema'
     forwardRef(() => RecipesModule),
   ],
   controllers: [ItemsController],
-  providers: [ItemsService],
+  providers: [ItemsService, ItemsGateway],
   exports: [MongooseModule],
 })
 export class ItemsModule {}
